@@ -20,6 +20,7 @@ function check(_changes, observer) {
         {
             reports.push({
                 rank:  parseInt($(obj).find('.clash-rank').text()),
+                score: parseInt($(obj).find('div.info-clash.score > div > div.info-content-container > div.info-value > span').text()),
                 nickname: $(obj).find('.nickname').text(),
                 language: $(obj).find('div.info-clash.language > div > div.info-content-container > div.info-value > span').text()
             });
@@ -30,21 +31,39 @@ function check(_changes, observer) {
         if (isShortestMode){
             let reportsByLanguage = R.groupBy<any>(report => report.language)(reports);
             R.forEachObjIndexed((reports, _language) => {
-                R.addIndex<any>(R.forEach)((report, idx) => report.fairRank = ++idx, reports);
+                R.addIndex<any>(R.forEach)((report, idx) => report.fairRank = idx + 1, reports);
             }, reportsByLanguage)
 
             let fairReports =
                 _.sortBy(_.flatten(_.map(reportsByLanguage, (reports, _) => reports)), report => report.rank);
 
+            let worstRank = _.max(_.map(fairReports, report => report.fairRank));
+            _.forEach(fairReports, report =>{
+                if (report.score === 0){
+                    report.fairRank = worstRank + 1
+                }
+            });
+
             $('.clash-rank').each((index, obj) =>
             {
-                let rank = fairReports[index].fairRank;
-                $(obj).text(rank);
-                if (rank === 1){
-                    $(obj)
-                        .parents("[ng-repeat='player in clashOfCodeService.currentReport.players']")
-                        .css('background-color', 'mediumseagreen');
+                let fairReport = fairReports[index];
+                $(obj).text(fairReport.fairRank);
+                if (fairReport.score > 0){
+                    var bgColor;
+                    switch (fairReport.fairRank) {
+                        case 1: bgColor = 'mediumseagreen'; break;
+                        case 2: bgColor = 'yellow'; break;
+                        default: bgColor = 'orange';
+                    }
                 }
+                else
+                {
+                    bgColor = 'indianred'
+                }
+
+                $(obj)
+                    .parents("[ng-repeat='player in clashOfCodeService.currentReport.players']")
+                    .css('background-color', bgColor);
             })
         }
     }
