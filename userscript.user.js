@@ -19,23 +19,24 @@ function check(_changes, observer) {
         setInterval(update, 3000);
         function update() {
             var reports = [];
-            $('.player-report').each(function (_, obj) {
+            $('.player-report').each(function (_i, obj) {
                 reports.push({
                     rank: parseInt($(obj).find('.clash-rank').text()),
                     score: parseInt($(obj).find('div.info-clash.score > div > div.info-content-container > div.info-value > span').text()),
+                    pending: _.isEmpty($(obj).find('.pending-rank')),
                     nickname: $(obj).find('.nickname').text(),
                     language: $(obj).find('div.info-clash.language > div > div.info-content-container > div.info-value > span').text()
                 });
             });
-            var finishedCount = _.countBy(reports, function (report) { return !isNaN(report.rank); }).true;
+            var finishedCount = _.countBy(reports, function (report) { return !isNaN(report.score); }).true;
             if (previousFinishedCount === finishedCount)
                 return;
             previousFinishedCount = finishedCount;
             var isShortestMode = $('div.clash-info-container > div > div.info-clash.criterion > div > div.info-content-container > div.info-label > span').first().text() === 'CHARACTERS';
             if (isShortestMode) {
                 var reportsByLanguage = R.groupBy(function (report) { return report.language; })(reports);
-                R.forEachObjIndexed(function (reports, _language) {
-                    R.addIndex(R.forEach)(function (report, idx) { return report.fairRank = idx + 1; }, reports);
+                R.forEachObjIndexed(function (reports, language) {
+                    R.addIndex(R.forEach)(function (report, idx) { return report.fairRank = language === 'N/A' ? NaN : idx + 1; }, reports);
                 }, reportsByLanguage);
                 var fairReports_1 = _.sortBy(_.flatten(_.map(reportsByLanguage, function (reports, _) { return reports; })), function (report) { return report.rank; });
                 var worstRank_1 = _.max(_.map(fairReports_1, function (report) { return report.fairRank; }));
@@ -59,10 +60,12 @@ function check(_changes, observer) {
                             default: bgColor = 'orange';
                         }
                     }
+                    else if (isNaN(fairReport.score)) {
+                        bgColor = 'transparent';
+                    }
                     else {
                         bgColor = 'indianred';
                     }
-                    // TODO color for Clashing.../Pending... NaN score
                     $(obj)
                         .parents("[ng-repeat='player in clashOfCodeService.currentReport.players']")
                         .css('background-color', bgColor);

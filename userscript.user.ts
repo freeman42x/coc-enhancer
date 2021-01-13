@@ -24,17 +24,18 @@ function check(_changes, observer) {
 
         function update() {
             let reports = [];
-            $('.player-report').each((_, obj) =>
+            $('.player-report').each((_i, obj) =>
             {
                 reports.push({
                     rank:  parseInt($(obj).find('.clash-rank').text()),
                     score: parseInt($(obj).find('div.info-clash.score > div > div.info-content-container > div.info-value > span').text()),
+                    pending: _.isEmpty($(obj).find('.pending-rank')),
                     nickname: $(obj).find('.nickname').text(),
                     language: $(obj).find('div.info-clash.language > div > div.info-content-container > div.info-value > span').text()
                 });
             });
 
-            var finishedCount = _.countBy(reports, report => !isNaN(report.rank)).true;
+            var finishedCount = _.countBy(reports, report => !isNaN(report.score)).true;
             if (previousFinishedCount === finishedCount) return;
             previousFinishedCount = finishedCount;
     
@@ -42,8 +43,8 @@ function check(_changes, observer) {
     
             if (isShortestMode){
                 let reportsByLanguage = R.groupBy<any>(report => report.language)(reports);
-                R.forEachObjIndexed((reports, _language) => {
-                    R.addIndex<any>(R.forEach)((report, idx) => report.fairRank = idx + 1, reports);
+                R.forEachObjIndexed((reports, language) => {
+                    R.addIndex<any>(R.forEach)((report, idx) => report.fairRank = language === 'N/A' ? NaN : idx + 1, reports);
                 }, reportsByLanguage)
     
                 let fairReports =
@@ -68,12 +69,14 @@ function check(_changes, observer) {
                             default: bgColor = 'orange';
                         }
                     }
+                    else if (isNaN(fairReport.score))
+                    {
+                        bgColor = 'transparent';
+                    }
                     else
                     {
-                        bgColor = 'indianred'
+                        bgColor = 'indianred';
                     }
-    
-                    // TODO color for Clashing.../Pending... NaN score
     
                     $(obj)
                         .parents("[ng-repeat='player in clashOfCodeService.currentReport.players']")
