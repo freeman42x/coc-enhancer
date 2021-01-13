@@ -20,6 +20,7 @@ function check(_changes, observer) {
         observer.disconnect();
 
         var previousFinishedCount = 0;
+        update();
         setInterval(update, 3000);
 
         function update() {
