@@ -27,9 +27,15 @@ function check(_changes, observer) {
             R.forEachObjIndexed(function (reports, _language) {
                 R.addIndex(R.forEach)(function (report, idx) { return report.fairRank = ++idx; }, reports);
             }, reportsByLanguage);
-            var fairReports_1 = _.flatten(_.map(reportsByLanguage, function (reports, _) { return reports; }));
+            var fairReports_1 = _.sortBy(_.flatten(_.map(reportsByLanguage, function (reports, _) { return reports; })), function (report) { return report.rank; });
             $('.clash-rank').each(function (index, obj) {
-                $(obj).text(fairReports_1[index].fairRank);
+                var rank = fairReports_1[index].fairRank;
+                $(obj).text(rank);
+                if (rank === 1) {
+                    $(obj)
+                        .parents("[ng-repeat='player in clashOfCodeService.currentReport.players']")
+                        .css('background-color', 'mediumseagreen');
+                }
             });
         }
     }

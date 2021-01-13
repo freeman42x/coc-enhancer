@@ -33,11 +33,18 @@ function check(_changes, observer) {
                 R.addIndex<any>(R.forEach)((report, idx) => report.fairRank = ++idx, reports);
             }, reportsByLanguage)
 
-            let fairReports = _.flatten(_.map(reportsByLanguage, (reports, _) => reports));
+            let fairReports =
+                _.sortBy(_.flatten(_.map(reportsByLanguage, (reports, _) => reports)), report => report.rank);
 
             $('.clash-rank').each((index, obj) =>
             {
-                $(obj).text(fairReports[index].fairRank);
+                let rank = fairReports[index].fairRank;
+                $(obj).text(rank);
+                if (rank === 1){
+                    $(obj)
+                        .parents("[ng-repeat='player in clashOfCodeService.currentReport.players']")
+                        .css('background-color', 'mediumseagreen');
+                }
             })
         }
     }
