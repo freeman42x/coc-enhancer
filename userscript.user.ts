@@ -53,7 +53,7 @@ function check(_changes, observer) {
                 let fairReports =
                     _.sortBy(_.flatten(_.map(reportsByLanguage, (reports, _) => reports)), report => report.rank);
     
-                let worstRank = _.max(_.map(fairReports, report => report.fairRank));
+                let worstRank = _.max(_.map(_.filter(fairReports, report => report.score > 0), report => report.fairRank));
                 _.forEach(fairReports, report =>{
                     if (report.score === 0){
                         report.fairRank = worstRank + 1

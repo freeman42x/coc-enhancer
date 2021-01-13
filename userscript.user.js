@@ -42,7 +42,7 @@ function check(_changes, observer) {
                     _.forEach(reports, function (report, idx) { return report.fairRank = language === 'N/A' ? NaN : idx + 1; });
                 });
                 var fairReports_1 = _.sortBy(_.flatten(_.map(reportsByLanguage, function (reports, _) { return reports; })), function (report) { return report.rank; });
-                var worstRank_1 = _.max(_.map(fairReports_1, function (report) { return report.fairRank; }));
+                var worstRank_1 = _.max(_.map(_.filter(fairReports_1, function (report) { return report.score > 0; }), function (report) { return report.fairRank; }));
                 _.forEach(fairReports_1, function (report) {
                     if (report.score === 0) {
                         report.fairRank = worstRank_1 + 1;
