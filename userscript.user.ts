@@ -88,7 +88,7 @@ function check(_changes, observer) {
 
                 var $reportContainer = $(".report-container > .content-container");
                 var $reports = $reportContainer.children('[ng-repeat]');
-                $reportContainer.append(_.sortBy($reports.detach(), $report => parseInt($($report).find('.clash-rank').text())));
+                $reportContainer.append(_.sortBy($reports.detach(), $report => Math.random() + parseInt($($report).find('.clash-rank').text())));
             }
         }
     }
