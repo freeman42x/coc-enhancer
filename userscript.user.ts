@@ -85,6 +85,10 @@ function check(_changes, observer) {
                         .parents("[ng-repeat='player in clashOfCodeService.currentReport.players']")
                         .css('background-color', bgColor);
                 })
+
+                var $reportContainer = $(".report-container > .content-container");
+                var $reports = $reportContainer.children('[ng-repeat]');
+                $reportContainer.append(_.sortBy($reports.detach(), $report => parseInt($($report).find('.clash-rank').text())));
             }
         }
     }
