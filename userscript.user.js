@@ -6,10 +6,12 @@
 // @version     1.0
 // @author      -
 // @description 3/8/2020, 8:42:28 PM
-// @require https://cdnjs.cloudflare.com/ajax/libs/ramda/0.27.1/ramda.min.js
 // @require https://raw.githubusercontent.com/lodash/lodash/4.17.15-npm/lodash.js
 // ==/UserScript==
-// TODO
+// TODO:
+// * group players of same ranking
+// * css for winners
+// * improve overall design
 // * easy way to view code side-by-side
 (new MutationObserver(check)).observe(document, { childList: true, subtree: true });
 function check(_changes, observer) {
@@ -35,10 +37,10 @@ function check(_changes, observer) {
             previousFinishedCount = finishedCount;
             var isShortestMode = $('div.clash-info-container > div > div.info-clash.criterion > div > div.info-content-container > div.info-label > span').first().text() === 'CHARACTERS';
             if (isShortestMode) {
-                var reportsByLanguage = R.groupBy(function (report) { return report.language; })(reports);
-                R.forEachObjIndexed(function (reports, language) {
-                    R.addIndex(R.forEach)(function (report, idx) { return report.fairRank = language === 'N/A' ? NaN : idx + 1; }, reports);
-                }, reportsByLanguage);
+                var reportsByLanguage = _.groupBy(reports, function (report) { return report.language; });
+                _.forOwn(reportsByLanguage, function (reports, language) {
+                    _.forEach(reports, function (report, idx) { return report.fairRank = language === 'N/A' ? NaN : idx + 1; });
+                });
                 var fairReports_1 = _.sortBy(_.flatten(_.map(reportsByLanguage, function (reports, _) { return reports; })), function (report) { return report.rank; });
                 var worstRank_1 = _.max(_.map(fairReports_1, function (report) { return report.fairRank; }));
                 _.forEach(fairReports_1, function (report) {
