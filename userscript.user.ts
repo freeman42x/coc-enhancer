@@ -10,9 +10,11 @@
 // ==/UserScript==
 
 // TODO:
+// * automatically start sync on new clash + click on start clash button
 // * css for winners
 // * improve overall design
 // * easy way to view code side-by-side
+// * save answers locally
 
 (new MutationObserver(check)).observe(document, {childList: true, subtree: true});
 
