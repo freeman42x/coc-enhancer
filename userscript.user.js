@@ -9,7 +9,6 @@
 // @require https://raw.githubusercontent.com/lodash/lodash/4.17.15-npm/lodash.js
 // ==/UserScript==
 // TODO:
-// * group players of same ranking
 // * css for winners
 // * improve overall design
 // * easy way to view code side-by-side
@@ -48,9 +47,16 @@ function check(_changes, observer) {
                         report.fairRank = worstRank_1 + 1;
                     }
                 });
-                $('.clash-rank').each(function (index, obj) {
+                var $reportContainer = $(".report-container > .content-container");
+                var $reports = $reportContainer.children('[ng-repeat]');
+                $reports.each(function (index, obj) {
                     var fairReport = fairReports_1[index];
-                    $(obj).text(fairReport.fairRank);
+                    $(obj).find('.clash-rank').text(fairReport.fairRank);
+                    if ($(obj).attr('class') === 'my-background') {
+                        $(obj)
+                            .find('div.clash-rank')
+                            .css('background-color', 'blueviolet');
+                    }
                     if (fairReport.score > 0) {
                         var bgColor;
                         switch (fairReport.fairRank) {
@@ -69,13 +75,13 @@ function check(_changes, observer) {
                     else {
                         bgColor = 'indianred';
                     }
+                    $(obj).css('background-color', bgColor);
                     $(obj)
-                        .parents("[ng-repeat='player in clashOfCodeService.currentReport.players']")
-                        .css('background-color', bgColor);
+                        .find('button')
+                        .css('background-color', '#e7e9eb');
                 });
-                var $reportContainer = $(".report-container > .content-container");
-                var $reports = $reportContainer.children('[ng-repeat]');
-                $reportContainer.append(_.sortBy($reports.detach(), function ($report) { return Math.random() + parseInt($($report).find('.clash-rank').text()); }));
+                $reportContainer
+                    .append(_.sortBy($reports.detach(), function ($report) { return Math.random() + parseInt($($report).find('.clash-rank').text()); }));
             }
         }
     }

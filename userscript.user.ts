@@ -10,7 +10,6 @@
 // ==/UserScript==
 
 // TODO:
-// * group players of same ranking
 // * css for winners
 // * improve overall design
 // * easy way to view code side-by-side
@@ -60,10 +59,19 @@ function check(_changes, observer) {
                     }
                 });
     
-                $('.clash-rank').each((index, obj) =>
+                var $reportContainer = $(".report-container > .content-container");
+                var $reports = $reportContainer.children('[ng-repeat]');
+                $reports.each((index, obj) =>
                 {
                     let fairReport = fairReports[index];
-                    $(obj).text(fairReport.fairRank);
+                    $(obj).find('.clash-rank').text(fairReport.fairRank);
+
+                    if ($(obj).attr('class') === 'my-background') {
+                        $(obj)
+                            .find('div.clash-rank')
+                            .css('background-color', 'blueviolet');             
+                    }
+
                     if (fairReport.score > 0){
                         var bgColor;
                         switch (fairReport.fairRank) {
@@ -81,14 +89,15 @@ function check(_changes, observer) {
                         bgColor = 'indianred';
                     }
     
+                    $(obj).css('background-color', bgColor);
                     $(obj)
-                        .parents("[ng-repeat='player in clashOfCodeService.currentReport.players']")
-                        .css('background-color', bgColor);
+                        .find('button')
+                        .css('background-color', '#e7e9eb');
                 })
 
-                var $reportContainer = $(".report-container > .content-container");
-                var $reports = $reportContainer.children('[ng-repeat]');
-                $reportContainer.append(_.sortBy($reports.detach(), $report => Math.random() + parseInt($($report).find('.clash-rank').text())));
+                $reportContainer
+                    .append(_.sortBy($reports.detach(),
+                        $report => Math.random() + parseInt($($report).find('.clash-rank').text())));
             }
         }
     }
