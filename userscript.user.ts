@@ -11,16 +11,16 @@
 
 // TODO:
 // * add screenshot to readme
+// * competition features:
+//   - leaderboard
+//   - vote on quality, type safety, etc.
+//   - voting via CoC integrated chat
 // * automatically start sync on new clash + click on start clash button
 // * automatic invites and twitch/discord share
 // * css for winners
 // * improve overall design
 // * easy way to view code side-by-side
 // * save answers locally
-// * competition features:
-//     - leaderboard
-//     - vote on quality, type safety, etc.
-//     - voting via CoC integrated chat
 
 (new MutationObserver(check)).observe(document, {childList: true, subtree: true});
 
