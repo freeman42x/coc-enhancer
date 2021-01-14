@@ -10,6 +10,7 @@
 // ==/UserScript==
 // TODO:
 // * automatically start sync on new clash + click on start clash button
+// * automatic invites and twitch/discord share
 // * css for winners
 // * improve overall design
 // * easy way to view code side-by-side
@@ -37,55 +38,53 @@ function check(_changes, observer) {
                 return;
             previousFinishedCount = finishedCount;
             var isShortestMode = $('div.clash-info-container > div > div.info-clash.criterion > div > div.info-content-container > div.info-label > span').first().text() === 'CHARACTERS';
-            if (isShortestMode) {
-                var reportsByLanguage = _.groupBy(reports, function (report) { return report.language; });
-                _.forOwn(reportsByLanguage, function (reports, language) {
-                    _.forEach(reports, function (report, idx) { return report.fairRank = language === 'N/A' ? NaN : idx + 1; });
-                });
-                var fairReports_1 = _.sortBy(_.flatten(_.map(reportsByLanguage, function (reports, _) { return reports; })), function (report) { return report.rank; });
-                var worstRank_1 = _.max(_.map(_.filter(fairReports_1, function (report) { return report.score > 0; }), function (report) { return report.fairRank; }));
-                _.forEach(fairReports_1, function (report) {
-                    if (report.score === 0) {
-                        report.fairRank = worstRank_1 + 1;
-                    }
-                });
-                var $reportContainer = $(".report-container > .content-container");
-                var $reports = $reportContainer.children('[ng-repeat]');
-                $reports.each(function (index, obj) {
-                    var fairReport = fairReports_1[index];
-                    $(obj).find('.clash-rank').text(fairReport.fairRank);
-                    if ($(obj).attr('class') === 'my-background') {
-                        $(obj)
-                            .find('div.clash-rank')
-                            .css('background-color', 'blueviolet');
-                    }
-                    if (fairReport.score > 0) {
-                        var bgColor;
-                        switch (fairReport.fairRank) {
-                            case 1:
-                                bgColor = 'mediumseagreen';
-                                break;
-                            case 2:
-                                bgColor = 'yellow';
-                                break;
-                            default: bgColor = 'orange';
-                        }
-                    }
-                    else if (isNaN(fairReport.score)) {
-                        bgColor = 'transparent';
-                    }
-                    else {
-                        bgColor = 'indianred';
-                    }
-                    $(obj).css('background-color', bgColor);
+            var reportsByLanguage = _.groupBy(reports, function (report) { return report.language; });
+            _.forOwn(reportsByLanguage, function (reports, language) {
+                _.forEach(reports, function (report, idx) { return report.fairRank = language === 'N/A' ? NaN : idx + 1; });
+            });
+            var fairReports = _.sortBy(_.flatten(_.map(reportsByLanguage, function (reports, _) { return reports; })), function (report) { return report.rank; });
+            var worstRank = _.max(_.map(_.filter(fairReports, function (report) { return report.score > 0; }), function (report) { return report.fairRank; }));
+            _.forEach(fairReports, function (report) {
+                if (report.score === 0) {
+                    report.fairRank = worstRank + 1;
+                }
+            });
+            var $reportContainer = $(".report-container > .content-container");
+            var $reports = $reportContainer.children('[ng-repeat]');
+            $reports.each(function (index, obj) {
+                var fairReport = fairReports[index];
+                $(obj).find('.clash-rank').text(fairReport.fairRank);
+                if ($(obj).attr('class') === 'my-background') {
                     $(obj)
-                        .find('button')
-                        .css('background-color', '#e7e9eb');
-                });
-                $reportContainer
-                    .children('.header-result')
-                    .after(_.sortBy($reports.detach(), function ($report) { return Math.random() + parseInt($($report).find('.clash-rank').text()); }));
-            }
+                        .find('div.clash-rank')
+                        .css('background-color', 'blueviolet');
+                }
+                if (fairReport.score > 0) {
+                    var bgColor;
+                    switch (fairReport.fairRank) {
+                        case 1:
+                            bgColor = 'mediumseagreen';
+                            break;
+                        case 2:
+                            bgColor = 'yellow';
+                            break;
+                        default: bgColor = 'orange';
+                    }
+                }
+                else if (isNaN(fairReport.score)) {
+                    bgColor = 'transparent';
+                }
+                else {
+                    bgColor = 'indianred';
+                }
+                $(obj).css('background-color', bgColor);
+                $(obj)
+                    .find('button')
+                    .css('background-color', '#e7e9eb');
+            });
+            $reportContainer
+                .children('.header-result')
+                .after(_.sortBy($reports.detach(), function ($report) { return Math.random() + parseInt($($report).find('.clash-rank').text()); }));
         }
     }
 }

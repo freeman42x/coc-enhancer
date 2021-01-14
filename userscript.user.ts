@@ -11,6 +11,7 @@
 
 // TODO:
 // * automatically start sync on new clash + click on start clash button
+// * automatic invites and twitch/discord share
 // * css for winners
 // * improve overall design
 // * easy way to view code side-by-side
@@ -45,63 +46,61 @@ function check(_changes, observer) {
     
             let isShortestMode = $('div.clash-info-container > div > div.info-clash.criterion > div > div.info-content-container > div.info-label > span').first().text() === 'CHARACTERS';
     
-            if (isShortestMode){
-                let reportsByLanguage = _.groupBy(reports, report => report.language);
-                _.forOwn(reportsByLanguage, (reports, language) => {
-                    _.forEach(reports, (report, idx) => report.fairRank = language === 'N/A' ? NaN : idx + 1);
-                })
-    
-                let fairReports =
-                    _.sortBy(_.flatten(_.map(reportsByLanguage, (reports, _) => reports)), report => report.rank);
-    
-                let worstRank = _.max(_.map(_.filter(fairReports, report => report.score > 0), report => report.fairRank));
-                _.forEach(fairReports, report =>{
-                    if (report.score === 0){
-                        report.fairRank = worstRank + 1
-                    }
-                });
-    
-                var $reportContainer = $(".report-container > .content-container");
-                var $reports = $reportContainer.children('[ng-repeat]');
-                $reports.each((index, obj) =>
-                {
-                    let fairReport = fairReports[index];
-                    $(obj).find('.clash-rank').text(fairReport.fairRank);
+            let reportsByLanguage = _.groupBy(reports, report => report.language);
+            _.forOwn(reportsByLanguage, (reports, language) => {
+                _.forEach(reports, (report, idx) => report.fairRank = language === 'N/A' ? NaN : idx + 1);
+            })
 
-                    if ($(obj).attr('class') === 'my-background') {
-                        $(obj)
-                            .find('div.clash-rank')
-                            .css('background-color', 'blueviolet');             
-                    }
+            let fairReports =
+                _.sortBy(_.flatten(_.map(reportsByLanguage, (reports, _) => reports)), report => report.rank);
 
-                    if (fairReport.score > 0){
-                        var bgColor;
-                        switch (fairReport.fairRank) {
-                            case 1: bgColor = 'mediumseagreen'; break;
-                            case 2: bgColor = 'yellow'; break;
-                            default: bgColor = 'orange';
-                        }
-                    }
-                    else if (isNaN(fairReport.score))
-                    {
-                        bgColor = 'transparent';
-                    }
-                    else
-                    {
-                        bgColor = 'indianred';
-                    }
-    
-                    $(obj).css('background-color', bgColor);
+            let worstRank = _.max(_.map(_.filter(fairReports, report => report.score > 0), report => report.fairRank));
+            _.forEach(fairReports, report =>{
+                if (report.score === 0){
+                    report.fairRank = worstRank + 1
+                }
+            });
+
+            var $reportContainer = $(".report-container > .content-container");
+            var $reports = $reportContainer.children('[ng-repeat]');
+            $reports.each((index, obj) =>
+            {
+                let fairReport = fairReports[index];
+                $(obj).find('.clash-rank').text(fairReport.fairRank);
+
+                if ($(obj).attr('class') === 'my-background') {
                     $(obj)
-                        .find('button')
-                        .css('background-color', '#e7e9eb');
-                })
+                        .find('div.clash-rank')
+                        .css('background-color', 'blueviolet');             
+                }
 
-                $reportContainer
-                    .children('.header-result')
-                    .after(_.sortBy($reports.detach(),
-                        $report => Math.random() + parseInt($($report).find('.clash-rank').text())));
-            }
+                if (fairReport.score > 0){
+                    var bgColor;
+                    switch (fairReport.fairRank) {
+                        case 1: bgColor = 'mediumseagreen'; break;
+                        case 2: bgColor = 'yellow'; break;
+                        default: bgColor = 'orange';
+                    }
+                }
+                else if (isNaN(fairReport.score))
+                {
+                    bgColor = 'transparent';
+                }
+                else
+                {
+                    bgColor = 'indianred';
+                }
+
+                $(obj).css('background-color', bgColor);
+                $(obj)
+                    .find('button')
+                    .css('background-color', '#e7e9eb');
+            })
+
+            $reportContainer
+                .children('.header-result')
+                .after(_.sortBy($reports.detach(),
+                    $report => Math.random() + parseInt($($report).find('.clash-rank').text())));
         }
     }
 }
