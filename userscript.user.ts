@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Clash of Code Enhancer
 // @namespace   Violentmonkey Scripts
-// @match       *://www.codingame.com/clashofcode/clash/report/*
+// @match       *://www.codingame.com/*
 // @grant       none
 // @version     1.0
 // @author      -
@@ -98,7 +98,8 @@ function check(_changes, observer) {
                 })
 
                 $reportContainer
-                    .append(_.sortBy($reports.detach(),
+                    .children('.button-container')
+                    .before(_.sortBy($reports.detach(),
                         $report => Math.random() + parseInt($($report).find('.clash-rank').text())));
             }
         }

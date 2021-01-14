@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Clash of Code Enhancer
 // @namespace   Violentmonkey Scripts
-// @match       *://www.codingame.com/clashofcode/clash/report/*
+// @match       *://www.codingame.com/*
 // @grant       none
 // @version     1.0
 // @author      -
@@ -83,7 +83,8 @@ function check(_changes, observer) {
                         .css('background-color', '#e7e9eb');
                 });
                 $reportContainer
-                    .append(_.sortBy($reports.detach(), function ($report) { return Math.random() + parseInt($($report).find('.clash-rank').text()); }));
+                    .children('.button-container')
+                    .before(_.sortBy($reports.detach(), function ($report) { return Math.random() + parseInt($($report).find('.clash-rank').text()); }));
             }
         }
     }
