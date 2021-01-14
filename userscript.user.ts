@@ -16,6 +16,7 @@
 // * improve overall design
 // * easy way to view code side-by-side
 // * save answers locally
+// * competition features
 
 (new MutationObserver(check)).observe(document, {childList: true, subtree: true});
 
