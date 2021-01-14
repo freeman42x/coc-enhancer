@@ -81,10 +81,10 @@ function check(_changes, observer) {
             //   - rank = position in CoC without this userscript, Int, [1..MAXrank]
             //   - fair rank = position in each group per language, Int, [1..MAXfairRank]
 
-            function getLeaderboardPoints(score: number, time: number, length: number){
+            function getLeaderboardPoints(score: number, time: number, length: number, fairRank: number){
                 let isShortestMode = !isNaN(length)
                 return isShortestMode
-                    ? score / (time * length)
+                    ? score / (time * fairRank)
                     : score / time;
             }
 

@@ -66,10 +66,10 @@ function check(_changes, observer) {
             // Derived inputs:
             //   - rank = position in CoC without this userscript, Int, [1..MAXrank]
             //   - fair rank = position in each group per language, Int, [1..MAXfairRank]
-            function getLeaderboardPoints(score, time, length) {
+            function getLeaderboardPoints(score, time, length, fairRank) {
                 var isShortestMode = !isNaN(length);
                 return isShortestMode
-                    ? score / (time * length)
+                    ? score / (time * fairRank)
                     : score / time;
             }
             $reports.each(function (index, obj) {
