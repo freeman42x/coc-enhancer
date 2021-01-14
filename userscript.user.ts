@@ -16,7 +16,10 @@
 // * improve overall design
 // * easy way to view code side-by-side
 // * save answers locally
-// * competition features
+// * competition features:
+//     - leaderboard
+//     - vote on quality, type safety, etc.
+//     - voting via CoC integrated chat
 
 (new MutationObserver(check)).observe(document, {childList: true, subtree: true});
 
@@ -29,6 +32,12 @@ function check(_changes, observer) {
         setInterval(update, 3000);
 
         function update() {
+            let $reportContainer = $(".report-container > .content-container");
+            let $reports = $reportContainer.children('[ng-repeat]');
+            if (_.isEmpty($reports)) {
+                location.reload();
+            }
+
             let reports = [];
             $('.player-report').each((_i, obj) =>
             {
@@ -62,8 +71,20 @@ function check(_changes, observer) {
                 }
             });
 
-            var $reportContainer = $(".report-container > .content-container");
-            var $reports = $reportContainer.children('[ng-repeat]');
+            // Leaderboard core input data:
+            //   - score = percentage of tests passed, Int, [0..100]
+            //   - time = time it took to solve the challenge, Int, [0..MAXtime]
+            //   - length = code size in number of characters, Int, [0..MAXlength]
+            //   - language = language in which the challenge was solved in
+
+            // Derived inputs:
+            //   - rank = position in CoC without this userscript, Int, [1..MAXrank]
+            //   - fair rank = position in each group per language, Int, [1..MAXfairRank]
+
+            function getLeaderboardPoints(){
+                // TODO
+            }
+
             $reports.each((index, obj) =>
             {
                 let fairReport = fairReports[index];
