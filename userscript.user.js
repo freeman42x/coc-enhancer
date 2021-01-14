@@ -83,8 +83,8 @@ function check(_changes, observer) {
                         .css('background-color', '#e7e9eb');
                 });
                 $reportContainer
-                    .children('.button-container')
-                    .before(_.sortBy($reports.detach(), function ($report) { return Math.random() + parseInt($($report).find('.clash-rank').text()); }));
+                    .children('.header-result')
+                    .after(_.sortBy($reports.detach(), function ($report) { return Math.random() + parseInt($($report).find('.clash-rank').text()); }));
             }
         }
     }

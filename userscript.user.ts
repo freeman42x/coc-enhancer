@@ -98,8 +98,8 @@ function check(_changes, observer) {
                 })
 
                 $reportContainer
-                    .children('.button-container')
-                    .before(_.sortBy($reports.detach(),
+                    .children('.header-result')
+                    .after(_.sortBy($reports.detach(),
                         $report => Math.random() + parseInt($($report).find('.clash-rank').text())));
             }
         }
