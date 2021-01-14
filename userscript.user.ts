@@ -10,6 +10,7 @@
 // ==/UserScript==
 
 // TODO:
+// * add screenshot to readme
 // * automatically start sync on new clash + click on start clash button
 // * automatic invites and twitch/discord share
 // * css for winners
@@ -54,8 +55,6 @@ function check(_changes, observer) {
             if (previousFinishedCount === finishedCount) return;
             previousFinishedCount = finishedCount;
     
-            let isShortestMode = $('div.clash-info-container > div > div.info-clash.criterion > div > div.info-content-container > div.info-label > span').first().text() === 'CHARACTERS';
-    
             let reportsByLanguage = _.groupBy(reports, report => report.language);
             _.forOwn(reportsByLanguage, (reports, language) => {
                 _.forEach(reports, (report, idx) => report.fairRank = language === 'N/A' ? NaN : idx + 1);
@@ -80,6 +79,8 @@ function check(_changes, observer) {
             // Derived inputs:
             //   - rank = position in CoC without this userscript, Int, [1..MAXrank]
             //   - fair rank = position in each group per language, Int, [1..MAXfairRank]
+
+            // lopidav suggested: https://gist.github.com/lopidav/4ae1c8c1382802c5cf4f40c6e933bbc2
 
             function getLeaderboardPoints(score: number, time: number, length: number, fairRank: number){
                 let isShortestMode = !isNaN(length)
@@ -122,10 +123,14 @@ function check(_changes, observer) {
                     .css('background-color', '#e7e9eb');
             })
 
+            // FIXME sortBy: fairRank -> score -> time 
             $reportContainer
                 .children('.header-result')
-                .after(_.sortBy($reports.detach(),
-                    $report => Math.random() + parseInt($($report).find('.clash-rank').text())));
+                .after(
+                    _($reports.detach())
+                        .sortBy($report => parseInt($($report).find('.clash-rank').text()))
+                        .value()
+                );
         }
     }
 }

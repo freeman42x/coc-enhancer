@@ -9,6 +9,7 @@
 // @require https://raw.githubusercontent.com/lodash/lodash/4.17.15-npm/lodash.js
 // ==/UserScript==
 // TODO:
+// * add screenshot to readme
 // * automatically start sync on new clash + click on start clash button
 // * automatic invites and twitch/discord share
 // * css for winners
@@ -46,7 +47,6 @@ function check(_changes, observer) {
             if (previousFinishedCount === finishedCount)
                 return;
             previousFinishedCount = finishedCount;
-            var isShortestMode = $('div.clash-info-container > div > div.info-clash.criterion > div > div.info-content-container > div.info-label > span').first().text() === 'CHARACTERS';
             var reportsByLanguage = _.groupBy(reports, function (report) { return report.language; });
             _.forOwn(reportsByLanguage, function (reports, language) {
                 _.forEach(reports, function (report, idx) { return report.fairRank = language === 'N/A' ? NaN : idx + 1; });
@@ -66,6 +66,7 @@ function check(_changes, observer) {
             // Derived inputs:
             //   - rank = position in CoC without this userscript, Int, [1..MAXrank]
             //   - fair rank = position in each group per language, Int, [1..MAXfairRank]
+            // lopidav suggested: https://gist.github.com/lopidav/4ae1c8c1382802c5cf4f40c6e933bbc2
             function getLeaderboardPoints(score, time, length, fairRank) {
                 var isShortestMode = !isNaN(length);
                 return isShortestMode
@@ -103,9 +104,12 @@ function check(_changes, observer) {
                     .find('button')
                     .css('background-color', '#e7e9eb');
             });
+            // TODO qweqwe
             $reportContainer
                 .children('.header-result')
-                .after(_.sortBy($reports.detach(), function ($report) { return Math.random() + parseInt($($report).find('.clash-rank').text()); }));
+                .after(_($reports.detach())
+                .sortBy(function ($report) { return parseInt($($report).find('.clash-rank').text()); })
+                .value());
         }
     }
 }
