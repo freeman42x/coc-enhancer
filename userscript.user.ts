@@ -4,8 +4,8 @@
 // @match       *://www.codingame.com/*
 // @grant       none
 // @version     1.0
-// @author      -
-// @description 3/8/2020, 8:42:28 PM
+// @author      Răzvan Flavius Panda
+// @description CodinGame Clash of Code enhancer: fair rankings, competition, ...
 // @require https://raw.githubusercontent.com/lodash/lodash/4.17.15-npm/lodash.js
 // ==/UserScript==
 
