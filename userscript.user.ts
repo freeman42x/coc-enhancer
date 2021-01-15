@@ -10,7 +10,6 @@
 // ==/UserScript==
 
 // TODO:
-// * add screenshot to readme
 // * competition features:
 //   - leaderboard
 //   - vote on quality, type safety, etc.
@@ -21,6 +20,7 @@
 // * improve overall design
 // * easy way to view code side-by-side
 // * save answers locally
+// * remove redundancy related to selectors usage
 
 (new MutationObserver(check)).observe(document, {childList: true, subtree: true});
 
@@ -42,12 +42,21 @@ function check(_changes, observer) {
             let reports = [];
             $('.player-report').each((_i, obj) =>
             {
+                let timeArray = $(obj)
+                    .find('div.info-clash.duration > div > div.info-content-container > div.info-value > span')
+                    .text()
+                    .split(':')
+                    .map(s => parseInt(s));
+
                 reports.push({
+                    name: $(obj).find('.nickname').text(),
                     rank:  parseInt($(obj).find('.clash-rank').text()),
                     score: parseInt($(obj).find('div.info-clash.score > div > div.info-content-container > div.info-value > span').text()),
                     pending: _.isEmpty($(obj).find('.pending-rank')),
                     nickname: $(obj).find('.nickname').text(),
-                    language: $(obj).find('div.info-clash.language > div > div.info-content-container > div.info-value > span').text()
+                    language: $(obj).find('div.info-clash.language > div > div.info-content-container > div.info-value > span').text(),
+                    time: timeArray[0] * 3600 + timeArray[1] * 60 + timeArray[2],
+                    length: parseInt($(obj).find('div.info-clash.criterion > div > div.info-content-container > div.info-value > span').text())
                 });
             });
 
@@ -70,6 +79,14 @@ function check(_changes, observer) {
                 }
             });
 
+            let reportData = [];
+            _(fairReports).forEach(report =>{
+                reportData.push(_.pick(report, 'name', 'score', 'time', 'length', 'fairRank'));
+            });
+
+            let keyPrefix = 'CoC_enhancer_';
+            localStorage.setItem(keyPrefix + _.last(location.pathname.split('/')), JSON.stringify(reportData));
+
             // Leaderboard core input data:
             //   - score = percentage of tests passed, Int, [0..100]
             //   - time = time it took to solve the challenge, Int, [0..MAXtime]
@@ -88,6 +105,38 @@ function check(_changes, observer) {
                     ? score / (time * fairRank)
                     : score / time;
             }
+
+            let leaderboard = [];
+            _.forOwn(localStorage, (value: string, key: string) => {
+                if (key.startsWith(keyPrefix)) {
+                    let reports = JSON.parse(value);
+                    _(reports).forEach((report) => {
+                        let playerInfo = _(leaderboard).find(player => player.name === report.name);
+                        let points = getLeaderboardPoints(report.score, report.time, report.length, report.fairRank);
+                        if (playerInfo){
+                            playerInfo.points += points;
+                        }
+                        else
+                        {
+                            leaderboard.push({
+                                name: report.name,
+                                points
+                            });
+                        }
+                    });
+                };
+            });
+
+            var table = "<table>";
+            _(leaderboard).forEach(playerInfo =>
+                table += '<tr><td>' + playerInfo.name + '</td><td>' + playerInfo.points + '</td></tr>');
+            table += "</table>"
+
+            let $leaderboard = $('<div>').append(table);
+            $reportContainer.prepend($leaderboard);
+
+            // TODO
+            // * add button to clear the leaderboard
 
             $reports.each((index, obj) =>
             {
