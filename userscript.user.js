@@ -132,7 +132,7 @@ function check(_changes, observer) {
             table += "</table>";
             let $leaderboard = $('<div>').append(table);
             $reportContainer.prepend($leaderboard);
-            $('#leaderboard td').css('padding', '15px');
+            $('#leaderboard td').css('padding', '0 15px');
             $reports.each((index, obj) => {
                 let fairReport = fairReports[index];
                 $(obj).find('.clash-rank').text(fairReport.fairRank);
