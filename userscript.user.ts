@@ -144,19 +144,16 @@ function check(_changes, observer) {
                 };
             });
 
-            var table = "<table>";
+            var table = "<br/><table style='font-family:monospace;margin:auto'>";
             _(leaderboard)
                 .sortBy(_ => _.points)
                 .reverse()
-                .forEach(playerInfo =>
-                    table += '<tr><td>' + playerInfo.name + '</td><td>' + playerInfo.points + '</td></tr>');
+                .forEach((playerInfo, index) =>
+                    table += '<tr><td>' + index + '</td><td>' + playerInfo.name + '</td><td>' + playerInfo.points.toFixed(19) + '</td></tr>');
             table += "</table>"
 
             let $leaderboard = $('<div>').append(table);
             $reportContainer.prepend($leaderboard);
-
-            // TODO
-            // * add button to clear the leaderboard
 
             $reports.each((index, obj) =>
             {
