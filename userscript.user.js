@@ -83,7 +83,6 @@ function check(_changes, observer) {
                             localStorage.removeItem(key);
                         }
                     });
-                    location.reload();
                 }
             });
             // Leaderboard core input data:
