@@ -9,10 +9,14 @@
 // @require https://raw.githubusercontent.com/lodash/lodash/4.17.15-npm/lodash.js
 // ==/UserScript==
 
-// TODO:
+// TODO features / improvements:
 // * display tournament round
 // * text to speech for timer
 // * competition features:
+//   - save tournament results
+//   - green and red arrow if someone advances in the leaderboard
+//   - more advanced statistics
+//   - sort by columns (use angularjs?)
 //   - vote on quality, type safety, etc.
 //   - voting via CoC integrated chat
 // * automatically start sync on new clash + click on start clash button
@@ -115,22 +119,24 @@ function check(_changes, observer) {
 
             // lopidav suggested: https://gist.github.com/lopidav/4ae1c8c1382802c5cf4f40c6e933bbc2
 
+            // TODO normalize points per language group in shortest mode
             function getLeaderboardPoints(score: number, time: number, length: number, fairRank: number){
                 let isShortestMode = !isNaN(length)
                 let points = isShortestMode
                     ? score / (time * fairRank)
                     : score / time;
 
-                return isNaN(points) ? 0 : points;
+                return isNaN(points) ? 0 : Math.round(100 * points);
             }
 
             let leaderboard = [];
             _.forOwn(localStorage, (value: string, key: string) => {
                 if (key.startsWith(keyPrefix)) {
                     let reports = JSON.parse(value);
+                    let maxPointsThisGame = _(reports).map(report => getLeaderboardPoints(report.score, report.time, report.length, report.fairRank)).max();
                     _(reports).forEach((report) => {
                         let playerInfo = _(leaderboard).find(player => player.name === report.name);
-                        let points = getLeaderboardPoints(report.score, report.time, report.length, report.fairRank);
+                        let points = Math.round(100 * getLeaderboardPoints(report.score, report.time, report.length, report.fairRank) / maxPointsThisGame);
                         if (playerInfo){
                             playerInfo.points += points;
                             playerInfo.gamesCount += 1;
@@ -149,7 +155,7 @@ function check(_changes, observer) {
 
             $('#leaderboard').remove();
             var table = "<br/><table id='leaderboard' style='font-family:monospace;margin:auto'>"
-                + '<tr><td>Position</td><td>Name</td><td>Points total</td><td>Points this game</td><td>Points / Game</td><td>Games</td></tr>';
+                + '<tr><td>Position</td><td>Name</td><td>Points total</td><td>Points this game</td><td>Points average per game</td><td>Games</td></tr>';
             _(leaderboard)
                 .sortBy(_ => _.points)
                 .reverse()
@@ -157,12 +163,15 @@ function check(_changes, observer) {
                     let report = _(fairReports).find(_ => _.name === playerInfo.name);
                     table += '<tr><td>' + index + '</td><td>'
                         + playerInfo.name + '</td><td>'
-                        + playerInfo.points.toFixed(19) + '</td><td>'
-                        + (report ? getLeaderboardPoints(report.score, report.time, report.length, report.fairRank).toFixed(19) : "N/A") + '</td><td>'
-                        + (playerInfo.points / playerInfo.gamesCount).toFixed(19) + '</td><td>'
+                        + playerInfo.points + '</td><td>'
+                        // FIXME normalize
+                        + (report ? getLeaderboardPoints(report.score, report.time, report.length, report.fairRank) : "N/A") + '</td><td>'
+                        + Math.round(playerInfo.points / playerInfo.gamesCount) + '</td><td>'
                         + playerInfo.gamesCount + '</td><td>'
                         + '</td></tr>'});
             table += "</table>"
+
+            // TODO position / game
 
             let $leaderboard = $('<div>').append(table);
             $reportContainer.prepend($leaderboard);
