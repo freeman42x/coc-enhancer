@@ -87,6 +87,23 @@ function check(_changes, observer) {
             let keyPrefix = 'CoC_enhancer_';
             localStorage.setItem(keyPrefix + _.last(location.pathname.split('/')), JSON.stringify(reportData));
 
+            // TODO move outside
+            document.addEventListener("keydown", event => {
+                if (event.isComposing || event.keyCode === 229) {
+                    return;
+                }
+
+                if (event.ctrlKey && event.key==='m'){
+                    _.forOwn(localStorage, (value: string, key: string) => {
+                        if (key.startsWith(keyPrefix)) {
+                            localStorage.removeItem(key);
+                        }
+                    });
+
+                    location.reload();
+                }
+            });
+
             // Leaderboard core input data:
             //   - score = percentage of tests passed, Int, [0..100]
             //   - time = time it took to solve the challenge, Int, [0..MAXtime]
