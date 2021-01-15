@@ -110,11 +110,13 @@ function check(_changes, observer) {
                         let points = getLeaderboardPoints(report.score, report.time, report.length, report.fairRank);
                         if (playerInfo) {
                             playerInfo.points += points;
+                            playerInfo.gamesCount += 1;
                         }
                         else {
                             leaderboard.push({
                                 name: report.name,
-                                points
+                                points,
+                                gamesCount: 1
                             });
                         }
                     });
@@ -122,13 +124,21 @@ function check(_changes, observer) {
                 ;
             });
             $('#leaderboard').remove();
-            var table = "<br/><table id='leaderboard' style='font-family:monospace;margin:auto'>";
+            var table = "<br/><table id='leaderboard' style='font-family:monospace;margin:auto'>"
+                + '<tr><td>Position</td><td>Name</td><td>Points total</td><td>Points this game</td><td>Points / Game</td><td>Games</td></tr>';
             _(leaderboard)
                 .sortBy(_ => _.points)
                 .reverse()
-                .forEach((playerInfo, index) => table += '<tr><td>' + index + '</td><td>'
-                + playerInfo.name + '</td><td>'
-                + (isNaN(playerInfo.points) ? 'Pending' : playerInfo.points.toFixed(19)) + '</td></tr>');
+                .forEach((playerInfo, index) => {
+                let report = _(fairReports).find(_ => _.name === playerInfo.name);
+                table += '<tr><td>' + index + '</td><td>'
+                    + playerInfo.name + '</td><td>'
+                    + playerInfo.points.toFixed(19) + '</td><td>'
+                    + (report ? getLeaderboardPoints(report.score, report.time, report.length, report.fairRank).toFixed(19) : "N/A") + '</td><td>'
+                    + (playerInfo.points / playerInfo.gamesCount).toFixed(19) + '</td><td>'
+                    + playerInfo.gamesCount + '</td><td>'
+                    + '</td></tr>';
+            });
             table += "</table>";
             let $leaderboard = $('<div>').append(table);
             $reportContainer.prepend($leaderboard);
