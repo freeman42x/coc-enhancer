@@ -155,6 +155,7 @@ function check(_changes, observer) {
 
             let $leaderboard = $('<div>').append(table);
             $reportContainer.prepend($leaderboard);
+            $('#leaderboard td').css('padding', '15px');
 
             $reports.each((index, obj) =>
             {
