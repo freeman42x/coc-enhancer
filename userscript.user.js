@@ -108,7 +108,10 @@ function check(_changes, observer) {
                 ;
             });
             var table = "<table>";
-            _(leaderboard).forEach(playerInfo => table += '<tr><td>' + playerInfo.name + '</td><td>' + playerInfo.points + '</td></tr>');
+            _(leaderboard)
+                .sortBy(_ => _.points)
+                .reverse()
+                .forEach(playerInfo => table += '<tr><td>' + playerInfo.name + '</td><td>' + playerInfo.points + '</td></tr>');
             table += "</table>";
             let $leaderboard = $('<div>').append(table);
             $reportContainer.prepend($leaderboard);
