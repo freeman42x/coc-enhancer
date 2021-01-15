@@ -10,8 +10,9 @@
 // ==/UserScript==
 
 // TODO:
+// * display tournament round
+// * text to speech for timer
 // * competition features:
-//   - leaderboard
 //   - vote on quality, type safety, etc.
 //   - voting via CoC integrated chat
 // * automatically start sync on new clash + click on start clash button

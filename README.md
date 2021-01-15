@@ -10,6 +10,8 @@ To use:
 * install https://violentmonkey.github.io/ extension for your browser or equivalent
 * load the userscript userscript.user.js in the extension
 
-Screenshot:
+Screenshots:
 
-![](images/screenshot.png)
+![](images/screenshot1.png)
+
+![](images/screenshot2.png)
