@@ -75,7 +75,7 @@ function check(_changes, observer) {
             let worstRank = _.max(_.map(_.filter(fairReports, report => report.score > 0), report => report.fairRank));
             _.forEach(fairReports, report =>{
                 if (report.score === 0){
-                    report.fairRank = worstRank + 1
+                    report.fairRank = (worstRank ?? 0) + 1
                 }
             });
 
@@ -142,12 +142,15 @@ function check(_changes, observer) {
                 };
             });
 
-            var table = "<br/><table style='font-family:monospace;margin:auto'>";
+            $('#leaderboard').remove();
+            var table = "<br/><table id='leaderboard' style='font-family:monospace;margin:auto'>";
             _(leaderboard)
                 .sortBy(_ => _.points)
                 .reverse()
                 .forEach((playerInfo, index) =>
-                    table += '<tr><td>' + index + '</td><td>' + playerInfo.name + '</td><td>' + playerInfo.points.toFixed(19) + '</td></tr>');
+                    table += '<tr><td>' + index + '</td><td>'
+                        + playerInfo.name + '</td><td>'
+                        + (isNaN(playerInfo.points) ? 'Pending' : playerInfo.points.toFixed(19)) + '</td></tr>');
             table += "</table>"
 
             let $leaderboard = $('<div>').append(table);
@@ -188,13 +191,13 @@ function check(_changes, observer) {
             })
 
             // FIXME sortBy: fairRank -> score -> time 
-            $reportContainer
-                .children('.header-result')
-                .after(
-                    _($reports.detach())
-                        .sortBy($report => parseInt($($report).find('.clash-rank').text()))
-                        .value()
-                );
+            // $reportContainer
+            //     .children('.header-result')
+            //     .after(
+            //         _($reports.detach())
+            //             .sortBy($report => parseInt($($report).find('.clash-rank').text()))
+            //             .value()
+            //     );
         }
     }
 }
