@@ -96,9 +96,10 @@ function check(_changes, observer) {
             // lopidav suggested: https://gist.github.com/lopidav/4ae1c8c1382802c5cf4f40c6e933bbc2
             function getLeaderboardPoints(score, time, length, fairRank) {
                 let isShortestMode = !isNaN(length);
-                return isShortestMode
+                let points = isShortestMode
                     ? score / (time * fairRank)
                     : score / time;
+                return isNaN(points) ? 0 : points;
             }
             let leaderboard = [];
             _.forOwn(localStorage, (value, key) => {

@@ -116,9 +116,11 @@ function check(_changes, observer) {
 
             function getLeaderboardPoints(score: number, time: number, length: number, fairRank: number){
                 let isShortestMode = !isNaN(length)
-                return isShortestMode
+                let points = isShortestMode
                     ? score / (time * fairRank)
                     : score / time;
+
+                return isNaN(points) ? 0 : points;
             }
 
             let leaderboard = [];
