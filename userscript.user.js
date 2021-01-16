@@ -9,6 +9,9 @@
 // @require https://raw.githubusercontent.com/lodash/lodash/4.17.15-npm/lodash.js
 // ==/UserScript==
 // TODO features / improvements:
+// * move feedback at bottom
+// * fix points this game
+// * fix updating condition
 // * points should depend when short mode based on language / length
 // * text to speech for timer
 // * automatic share my code
