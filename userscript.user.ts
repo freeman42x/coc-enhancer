@@ -10,7 +10,6 @@
 // ==/UserScript==
 
 // TODO features / improvements:
-// * fix points this game
 // * automatically start sync on new clash + click on start clash button
 // * submit on all tests passed
 // * fix updating condition
@@ -176,12 +175,15 @@ function check(_changes, observer) {
             _.forOwn(localStorage, (value: string, key: string) => {
                 if (key.startsWith(keyPrefix)) {
                     let reports = JSON.parse(value);
-                    let maxPointsThisGame = _(reports).map(report => getLeaderboardPoints(report.score, report.time, report.length, report.fairRank)).max();
+                    let maxPointsThisGame = _(reports)
+                        .map(report => getLeaderboardPoints(report.score, report.time, report.length, report.fairRank))
+                        .max();
                     _(reports).forEach((report) => {
                         let playerInfo = _(leaderboard).find(player => player.name === report.name);
                         let points = Math.round(100 * getLeaderboardPoints(report.score, report.time, report.length, report.fairRank) / maxPointsThisGame);
                         if (playerInfo){
                             playerInfo.points += points;
+                            playerInfo.pointsThisGame = points;
                             playerInfo.gamesCount += 1;
                         }
                         else
@@ -189,6 +191,7 @@ function check(_changes, observer) {
                             leaderboard.push({
                                 name: report.name,
                                 points,
+                                pointsThisGame: points,
                                 gamesCount: 1
                             });
                         }
@@ -220,8 +223,7 @@ function check(_changes, observer) {
                     table += '<tr' + attr + '><td>' + (index + 1) + '</td><td>'
                         + playerInfo.name + '</td><td>'
                         + playerInfo.points + '</td><td>'
-                        // FIXME normalize
-                        + (report ? getLeaderboardPoints(report.score, report.time, report.length, report.fairRank) : "N/A") + '</td><td>'
+                        + (report ? playerInfo.pointsThisGame : "N/A") + '</td><td>'
                         + Math.round(playerInfo.points / playerInfo.gamesCount) + '</td><td>'
                         + playerInfo.gamesCount + '</td>'
                 });
