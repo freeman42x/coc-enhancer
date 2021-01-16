@@ -115,8 +115,11 @@ function check(_changes, observer) {
             _(fairReports).forEach(report => {
                 reportData.push(_.pick(report, 'name', 'score', 'time', 'length', 'fairRank'));
             });
+            function getReportId() {
+                return _.last(location.pathname.split('/'));
+            }
             let keyPrefix = 'CoC_enhancer_';
-            localStorage.setItem(keyPrefix + _.last(location.pathname.split('/')), JSON.stringify(reportData));
+            localStorage.setItem(keyPrefix + getReportId(), JSON.stringify(reportData));
             // TODO move outside
             document.addEventListener("keydown", event => {
                 if (event.isComposing || event.keyCode === 229) {
@@ -155,20 +158,25 @@ function check(_changes, observer) {
                         .map(report => getLeaderboardPoints(report.score, report.time, report.length, report.fairRank))
                         .max();
                     _(reports).forEach((report) => {
-                        let playerInfo = _(leaderboard).find(player => player.name === report.name);
+                        var playerInfo = _(leaderboard).find(player => player.name === report.name);
                         let points = Math.round(100 * getLeaderboardPoints(report.score, report.time, report.length, report.fairRank) / maxPointsThisGame);
                         if (playerInfo) {
                             playerInfo.points += points;
-                            playerInfo.pointsThisGame = points;
                             playerInfo.gamesCount += 1;
+                            if (key === keyPrefix + getReportId()) {
+                                playerInfo.pointsThisGame = points;
+                            }
                         }
                         else {
-                            leaderboard.push({
+                            playerInfo = {
                                 name: report.name,
                                 points,
-                                pointsThisGame: points,
                                 gamesCount: 1
-                            });
+                            };
+                            if (key === keyPrefix + getReportId()) {
+                                playerInfo.pointsThisGame = points;
+                            }
+                            leaderboard.push(playerInfo);
                         }
                     });
                 }
