@@ -10,15 +10,18 @@
 // ==/UserScript==
 
 // TODO features / improvements:
-// * display tournament round
+// * points should depend when short mode based on language / length
 // * text to speech for timer
-// * competition features:
-//   - save tournament results
-//   - green and red arrow if someone advances in the leaderboard
-//   - more advanced statistics
-//   - sort by columns (use angularjs?)
-//   - vote on quality, type safety, etc.
-//   - voting via CoC integrated chat
+// * automatic share my code
+// * display tournament round
+// * start new tournament - tournament id
+// * tournament id dropdown - aggregate [1..n] tournaments
+// * green and red arrow if someone advances in the leaderboard
+// * more advanced statistics
+// * save all tournaments results
+// * sort by columns (use angularjs?)
+// * vote on quality, type safety, etc.
+// * voting via CoC integrated chat
 // * automatically start sync on new clash + click on start clash button
 // * automatic invites and twitch/discord share
 // * css for winners
@@ -26,6 +29,32 @@
 // * easy way to view code side-by-side
 // * save answers locally
 // * remove redundancy related to selectors usage
+// * move css to external file: @resource
+
+$(`
+<style>
+    #leaderboard {
+        font-family: monospace;
+        margin: auto
+    }
+
+    #leaderboard thead th {
+        padding: 0 15px
+    }
+
+    #leaderboard tbody td {
+        padding: 0 15px
+    }
+
+    #leaderboard tbody tr:nth-child(odd) {
+        background-color: #cacbce;
+    }
+
+    #leaderboard tbody #my-tr {
+        background-color: #c799f1;
+    }
+</style>`)
+    .appendTo("head");
 
 (new MutationObserver(check)).observe(document, {childList: true, subtree: true});
 
@@ -68,7 +97,9 @@ function check(_changes, observer) {
             var finishedCount = _.countBy(reports, report => !isNaN(report.score)).true;
             if (previousFinishedCount === finishedCount) return;
             previousFinishedCount = finishedCount;
-    
+
+            $('.share-solution-button').trigger("click");
+
             let reportsByLanguage = _.groupBy(reports, report => report.language);
             _.forOwn(reportsByLanguage, (reports, language) => {
                 _.forEach(reports, (report, idx) => report.fairRank = language === 'N/A' ? NaN : idx + 1);
@@ -154,34 +185,47 @@ function check(_changes, observer) {
             });
 
             $('#leaderboard').remove();
-            var table = "<br/><table id='leaderboard' style='font-family:monospace;margin:auto'>"
-                + '<tr><td>Position</td><td>Name</td><td>Points total</td><td>Points this game</td><td>Points average per game</td><td>Games</td></tr>';
+            var table =
+                `<table id='leaderboard'>
+                    <thead>
+                        <tr>
+                            <th>Position</th>
+                            <th>Name</th>
+                            <th>Points total</th>
+                            <th>Points this game</th>
+                            <th>Points average per game</th>
+                            <th>Games</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+            let playerName = $('.my-background .nickname').text();
             _(leaderboard)
                 .sortBy(_ => _.points)
                 .reverse()
                 .forEach((playerInfo, index) => {
                     let report = _(fairReports).find(_ => _.name === playerInfo.name);
-                    table += '<tr><td>' + index + '</td><td>'
+                    let attr = playerInfo.name === playerName ? ' id="my-tr"' : '';
+                    table += '<tr' + attr + '><td>' + (index + 1) + '</td><td>'
                         + playerInfo.name + '</td><td>'
                         + playerInfo.points + '</td><td>'
                         // FIXME normalize
                         + (report ? getLeaderboardPoints(report.score, report.time, report.length, report.fairRank) : "N/A") + '</td><td>'
                         + Math.round(playerInfo.points / playerInfo.gamesCount) + '</td><td>'
-                        + playerInfo.gamesCount + '</td><td>'
-                        + '</td></tr>'});
-            table += "</table>"
+                        + playerInfo.gamesCount + '</td>'
+                });
+            table += "</tbody></table>"
 
             // TODO position / game
 
             let $leaderboard = $('<div>').append(table);
             $reportContainer.prepend($leaderboard);
-            $('#leaderboard td').css('padding', '0 15px');
 
             $reports.each((index, obj) =>
             {
                 let fairReport = fairReports[index];
                 $(obj).find('.clash-rank').text(fairReport.fairRank);
 
+                // TODO to style tag
                 if ($(obj).attr('class') === 'my-background') {
                     $(obj)
                         .find('div.clash-rank')
