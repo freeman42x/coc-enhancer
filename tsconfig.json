@@ -5,6 +5,7 @@
       "sourceMap": true
     },
     "files": [
-      "userscript.user.ts"
+      "userscript.user.ts",
+      "violentmonkey.d.ts"
     ]
 }

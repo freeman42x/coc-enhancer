@@ -2,7 +2,7 @@
 // @name        Clash of Code Enhancer
 // @namespace   Violentmonkey Scripts
 // @match       *://www.codingame.com/*
-// @grant       none
+// @grant       GM_addStyle
 // @version     1.0
 // @author      Răzvan Flavius Panda
 // @description CodinGame Clash of Code enhancer: fair rankings, competition, ...
@@ -10,8 +10,9 @@
 // ==/UserScript==
 
 // TODO features / improvements:
-// * move feedback at bottom
 // * fix points this game
+// * automatically start sync on new clash + click on start clash button
+// * submit on all tests passed
 // * fix updating condition
 // * points should depend when short mode based on language / length
 // * text to speech for timer
@@ -25,7 +26,6 @@
 // * sort by columns (use angularjs?)
 // * vote on quality, type safety, etc.
 // * voting via CoC integrated chat
-// * automatically start sync on new clash + click on start clash button
 // * automatic invites and twitch/discord share
 // * css for winners
 // * improve overall design
@@ -33,20 +33,21 @@
 // * save answers locally
 // * remove redundancy related to selectors usage
 // * move css to external file: @resource
+// * reset local code file when starting new clash
+// * points explanation
 
-$(`
-<style>
+GM_addStyle(`
     #leaderboard {
         font-family: monospace;
-        margin: auto
+        margin: auto;
     }
 
     #leaderboard thead th {
-        padding: 0 15px
+        padding: 0 15px;
     }
 
     #leaderboard tbody td {
-        padding: 0 15px
+        padding: 0 15px;
     }
 
     #leaderboard tbody tr:nth-child(odd) {
@@ -56,8 +57,16 @@ $(`
     #leaderboard tbody #my-tr {
         background-color: #c799f1;
     }
-</style>`)
-    .appendTo("head");
+
+    #clashofcode-report .report-container {
+        display: block !important;
+    }
+
+    .content-container {
+        clear: both;
+        margin: auto;
+    }
+`);
 
 (new MutationObserver(check)).observe(document, {childList: true, subtree: true});
 
@@ -155,7 +164,7 @@ function check(_changes, observer) {
 
             // TODO normalize points per language group in shortest mode
             function getLeaderboardPoints(score: number, time: number, length: number, fairRank: number){
-                let isShortestMode = !isNaN(length)
+                let isShortestMode = !isNaN(length) && length // FIXME
                 let points = isShortestMode
                     ? score / (time * fairRank)
                     : score / time;
