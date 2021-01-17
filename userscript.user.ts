@@ -10,11 +10,13 @@
 // ==/UserScript==
 
 // TODO features / improvements:
+// * Points this game pending fix
+// * keyboard shortcut to start new clash
 // * submit on all tests passed
+// * convert table to use angularjs? vue?
 // * fix updating condition
 // * points should depend when short mode based on language / length
 // * text to speech for timer
-// * automatic share my code
 // * display tournament round
 // * start new tournament - tournament id
 // * tournament id dropdown - aggregate [1..n] tournaments
@@ -66,6 +68,11 @@ GM_addStyle(`
     }
 `);
 
+let SETTINGS = {
+    enableIdeSynchronization: true,
+    automaticallyShareSolution: true
+};
+
 (new MutationObserver(checkIde)).observe(document, {childList: true, subtree: true});
 
 function checkIde(_changes, observer) {
@@ -74,11 +81,13 @@ function checkIde(_changes, observer) {
 
         $('.got-it-button').trigger("click");
 
-        setTimeout(function(){
-            $('.settings > .menu-entry-inner').trigger("click");
-            $('[for="ide-settings-synchro-enabled"]').trigger("click");
-            $('.settings > .menu-entry-inner').trigger("click");
-        }, 300);
+        if (SETTINGS.enableIdeSynchronization) {
+            setTimeout(function(){
+                $('.settings > .menu-entry-inner').trigger("click");
+                $('[for="ide-settings-synchro-enabled"]').trigger("click");
+                $('.settings > .menu-entry-inner').trigger("click");
+            }, 300);
+        }
     }
 }
 
@@ -124,7 +133,9 @@ function check(_changes, observer) {
             if (previousFinishedCount === finishedCount) return;
             previousFinishedCount = finishedCount;
 
-            $('.share-solution-button').trigger("click");
+            if (SETTINGS.automaticallyShareSolution) {
+                $('.share-solution-button').trigger("click");
+            }
 
             let reportsByLanguage = _.groupBy(reports, report => report.language);
             _.forOwn(reportsByLanguage, (reports, language) => {
@@ -187,7 +198,7 @@ function check(_changes, observer) {
                     ? score / (time * fairRank)
                     : score / time;
 
-                return isNaN(points) ? 0 : Math.round(100 * points);
+                return Math.round(100 * points);
             }
 
             let leaderboard = [];
@@ -201,7 +212,7 @@ function check(_changes, observer) {
                         var playerInfo = _(leaderboard).find(player => player.name === report.name);
                         let points = Math.round(100 * getLeaderboardPoints(report.score, report.time, report.length, report.fairRank) / maxPointsThisGame);
                         if (playerInfo){
-                            playerInfo.points += points;
+                            playerInfo.points += isNaN(points) ? 0 : points;
                             playerInfo.gamesCount += 1;
                             if (key === keyPrefix + getReportId()) {
                                 playerInfo.pointsThisGame = points;
@@ -211,8 +222,10 @@ function check(_changes, observer) {
                         {
                             playerInfo = {
                                 name: report.name,
-                                points,
                                 gamesCount: 1
+                            }
+                            if (!isNaN(points)) {
+                                playerInfo.points = points;
                             }
                             if (key === keyPrefix + getReportId()) {
                                 playerInfo.pointsThisGame = points;
@@ -242,12 +255,12 @@ function check(_changes, observer) {
                 .sortBy(_ => _.points)
                 .reverse()
                 .forEach((playerInfo, index) => {
-                    let report = _(fairReports).find(_ => _.name === playerInfo.name);
+                    let hasReportThisGame = _(fairReports).find(_ => _.name === playerInfo.name);
                     let attr = playerInfo.name === playerName ? ' id="my-tr"' : '';
                     table += '<tr' + attr + '><td>' + (index + 1) + '</td><td>'
                         + playerInfo.name + '</td><td>'
                         + playerInfo.points + '</td><td>'
-                        + (report ? playerInfo.pointsThisGame : "N/A") + '</td><td>'
+                        + (hasReportThisGame ? (isNaN(playerInfo.pointsThisGame) ? "Pending..." : playerInfo.pointsThisGame) : "N/A") + '</td><td>'
                         + Math.round(playerInfo.points / playerInfo.gamesCount) + '</td><td>'
                         + playerInfo.gamesCount + '</td>'
                 });
