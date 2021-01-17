@@ -72,8 +72,8 @@ let SETTINGS = {
 let LOCAL_STORAGE_KEYS = {
     startNewGame: 'startNewGame'
 };
-let $startNewPrivateClashButton = () => $('.clashofcode-privateclash .clashofcode-external-feature-link');
 (new MutationObserver(checkNewClash)).observe(document, { childList: true, subtree: true });
+let $startNewPrivateClashButton = () => $('.clashofcode-privateclash .clashofcode-external-feature-link');
 function checkNewClash(_changes, observer) {
     if (!_.isEmpty($startNewPrivateClashButton())) {
         observer.disconnect();
@@ -84,10 +84,11 @@ function checkNewClash(_changes, observer) {
     }
 }
 (new MutationObserver(checkIde)).observe(document, { childList: true, subtree: true });
+let $gotItButton = () => $('.got-it-button');
 function checkIde(_changes, observer) {
-    if (document.querySelector('.got-it-button')) {
+    if (!_.isEmpty($gotItButton())) {
         observer.disconnect();
-        $('.got-it-button').trigger("click");
+        $gotItButton().trigger("click");
         if (SETTINGS.enableIdeSynchronization) {
             setTimeout(function () {
                 $('.settings > .menu-entry-inner').trigger("click");
@@ -98,8 +99,9 @@ function checkIde(_changes, observer) {
     }
 }
 (new MutationObserver(check)).observe(document, { childList: true, subtree: true });
+let $playerReport = () => $('.player-report');
 function check(_changes, observer) {
-    if (document.querySelector('.player-report')) {
+    if (!_.isEmpty($playerReport())) {
         observer.disconnect();
         var previousFinishedCount = 0;
         update();
@@ -111,7 +113,7 @@ function check(_changes, observer) {
                 location.reload();
             }
             let reports = [];
-            $('.player-report').each((_i, obj) => {
+            $playerReport().each((_i, obj) => {
                 let timeArray = $(obj)
                     .find('div.info-clash.duration > div > div.info-content-container > div.info-value > span')
                     .text()
