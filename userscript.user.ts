@@ -10,10 +10,8 @@
 // ==/UserScript==
 
 // TODO features / improvements:
-// * Points this game pending fix
-// * keyboard shortcut to start new clash
+// * automatic invites and twitch/discord share
 // * submit on all tests passed
-// * convert table to use angularjs? vue?
 // * fix updating condition
 // * points should depend when short mode based on language / length
 // * text to speech for timer
@@ -23,18 +21,18 @@
 // * green and red arrow if someone advances in the leaderboard
 // * more advanced statistics
 // * save all tournaments results
+// * add keyboard shortcuts to change between enabled languages sets
+// * convert table to use angularjs? vue?
 // * sort by columns (use angularjs?)
 // * vote on quality, type safety, etc.
 // * voting via CoC integrated chat
-// * automatic invites and twitch/discord share
-// * css for winners
-// * improve overall design
 // * easy way to view code side-by-side
 // * save answers locally
 // * remove redundancy related to selectors usage
 // * move css to external file: @resource
 // * reset local code file when starting new clash
 // * points explanation
+// * shortcut to obfuscate usernames and avatars
 
 GM_addStyle(`
     #leaderboard {

@@ -9,8 +9,9 @@
 // @require https://raw.githubusercontent.com/lodash/lodash/4.17.15-npm/lodash.js
 // ==/UserScript==
 // TODO features / improvements:
-// * Points this game pending fix
-// * keyboard shortcut to start new clash
+// * shortcut to obfuscate usernames and avatars
+// * features list in readme
+// * add keyboard shortcuts to change between enabled languages sets
 // * submit on all tests passed
 // * convert table to use angularjs? vue?
 // * fix updating condition
