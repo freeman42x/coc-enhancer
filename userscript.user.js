@@ -69,6 +69,20 @@ let SETTINGS = {
     enableIdeSynchronization: true,
     automaticallyShareSolution: true
 };
+let LOCAL_STORAGE_KEYS = {
+    startNewGame: 'startNewGame'
+};
+let $startNewPrivateClashButton = () => $('.clashofcode-privateclash .clashofcode-external-feature-link');
+(new MutationObserver(checkNewClash)).observe(document, { childList: true, subtree: true });
+function checkNewClash(_changes, observer) {
+    if (!_.isEmpty($startNewPrivateClashButton())) {
+        observer.disconnect();
+        if (localStorage.getItem(LOCAL_STORAGE_KEYS.startNewGame) === 'true') {
+            $startNewPrivateClashButton().trigger("click");
+            localStorage.removeItem(LOCAL_STORAGE_KEYS.startNewGame);
+        }
+    }
+}
 (new MutationObserver(checkIde)).observe(document, { childList: true, subtree: true });
 function checkIde(_changes, observer) {
     if (document.querySelector('.got-it-button')) {
@@ -152,6 +166,10 @@ function check(_changes, observer) {
                             localStorage.removeItem(key);
                         }
                     });
+                }
+                if (event.ctrlKey && event.key === 'i') {
+                    window.location.assign('https://www.codingame.com/multiplayer/clashofcode');
+                    localStorage.setItem(LOCAL_STORAGE_KEYS.startNewGame, 'true'); // FIXME use proper prefix
                 }
             });
             // Leaderboard core input data:
