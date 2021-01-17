@@ -10,7 +10,6 @@
 // ==/UserScript==
 
 // TODO features / improvements:
-// * automatically start sync on new clash + click on start clash button
 // * submit on all tests passed
 // * fix updating condition
 // * points should depend when short mode based on language / length
@@ -66,6 +65,22 @@ GM_addStyle(`
         margin: auto;
     }
 `);
+
+(new MutationObserver(checkIde)).observe(document, {childList: true, subtree: true});
+
+function checkIde(_changes, observer) {
+    if(document.querySelector('.got-it-button')) {
+        observer.disconnect();
+
+        $('.got-it-button').trigger("click");
+
+        setTimeout(function(){
+            $('.settings > .menu-entry-inner').trigger("click");
+            $('[for="ide-settings-synchro-enabled"]').trigger("click");
+            $('.settings > .menu-entry-inner').trigger("click");
+        }, 300);
+    }
+}
 
 (new MutationObserver(check)).observe(document, {childList: true, subtree: true});
 
