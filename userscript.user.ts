@@ -72,7 +72,8 @@ GM_addStyle(`
 
 let SETTINGS = {
     enableIdeSynchronization: true,
-    automaticallyShareSolution: true
+    automaticallyShareSolution: true,
+    enableVanillaLeaderboardStyling: true
 };
 
 let LOCAL_STORAGE_KEYS = {
@@ -312,34 +313,35 @@ function check(_changes, observer) {
                 let fairReport = fairReports[index];
                 $(obj).find('.clash-rank').text(fairReport.fairRank);
 
-                // TODO to style tag
-                if ($(obj).attr('class') === 'my-background') {
-                    $(obj)
-                        .find('div.clash-rank')
-                        .css('background-color', 'blueviolet');             
-                }
-
-                if (fairReport.score > 0){
-                    var bgColor;
-                    switch (fairReport.fairRank) {
-                        case 1: bgColor = 'mediumseagreen'; break;
-                        case 2: bgColor = 'yellow'; break;
-                        default: bgColor = 'orange';
+                if (SETTINGS.enableVanillaLeaderboardStyling) {
+                    if ($(obj).attr('class') === 'my-background') {
+                        $(obj)
+                            .find('div.clash-rank')
+                            .css('background-color', 'blueviolet');             
                     }
+    
+                    if (fairReport.score > 0){
+                        var bgColor;
+                        switch (fairReport.fairRank) {
+                            case 1: bgColor = 'mediumseagreen'; break;
+                            case 2: bgColor = 'yellow'; break;
+                            default: bgColor = 'orange';
+                        }
+                    }
+                    else if (isNaN(fairReport.score))
+                    {
+                        bgColor = 'transparent';
+                    }
+                    else
+                    {
+                        bgColor = 'indianred';
+                    }
+    
+                    $(obj).css('background-color', bgColor);
+                    $(obj)
+                        .find('button')
+                        .css('background-color', '#e7e9eb');
                 }
-                else if (isNaN(fairReport.score))
-                {
-                    bgColor = 'transparent';
-                }
-                else
-                {
-                    bgColor = 'indianred';
-                }
-
-                $(obj).css('background-color', bgColor);
-                $(obj)
-                    .find('button')
-                    .css('background-color', '#e7e9eb');
             })
 
             // FIXME sortBy: fairRank -> score -> time 

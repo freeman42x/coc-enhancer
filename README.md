@@ -4,6 +4,7 @@ Features:
 
 * fair leaderboard points system - the verbosity of a programming language does not influence points gained in shortest mode clashes
 * tournament leaderboard points persistent over multiple Clash of Code games
+* color codes the vanilla leaderboard based on current game results: green for winners, yellow for 2nd position, orange for 3rd position or lower and red for 0% score, setting: enableVanillaLeaderboardStyling
 * automatically shares code when clash ends, setting: automaticallyShareSolution
 * when starting a new clash it closes the pop-up
 * when starting a new clash it enables the automatic file sync extension: [CodinGame Sync](https://www.codingame.com/forum/t/codingame-sync-beta/614), setting: enableIdeSynchronization
