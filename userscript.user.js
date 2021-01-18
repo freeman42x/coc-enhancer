@@ -10,6 +10,7 @@
 // ==/UserScript==
 // TODO features / improvements:
 // * add keyboard shortcuts to change between enabled languages sets
+// * 100% score should give much more points, maybe use exponential scale for score
 // * force update keyboard shortcut
 // * points should depend when short mode based on language / length
 // * fix leaderboard point related bugs
@@ -183,9 +184,7 @@ function check(_changes, observer) {
                 }
             });
             function getPoints(score, time, length, language, isShortestMode, minLengthPerLanguage) {
-                let points = isShortestMode
-                    ? (score / time) * (minLengthPerLanguage[language] / length)
-                    : score / time;
+                let points = isShortestMode ? score * (minLengthPerLanguage[language] / length) : score / time;
                 return 100 * points;
             }
             let leaderboard = [];
@@ -205,7 +204,7 @@ function check(_changes, observer) {
                         let points = Math.round(100 * getPoints(report.score, report.time, report.length, report.language, isShortestMode, minLengthPerLanguage) / maxPointsThisGame);
                         let isCurrentGame = key === keyPrefix + getReportId();
                         let pointsTotal = points ? points : 0;
-                        let pointsThisGame = points ? points : 'Pending...';
+                        let pointsThisGame = points === 0 ? 0 : points ? points : 'Pending...';
                         if (playerInfo) {
                             playerInfo.points += pointsTotal;
                             playerInfo.gamesCount += 1;
@@ -216,11 +215,9 @@ function check(_changes, observer) {
                         else {
                             playerInfo = {
                                 name: report.name,
-                                gamesCount: 1
+                                gamesCount: 1,
+                                points: pointsTotal ? pointsTotal : 0
                             };
-                            if (points) {
-                                playerInfo.points = pointsTotal;
-                            }
                             if (isCurrentGame) {
                                 playerInfo.pointsThisGame = pointsThisGame;
                             }
