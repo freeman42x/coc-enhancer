@@ -9,6 +9,7 @@
 // @require https://raw.githubusercontent.com/lodash/lodash/4.17.15-npm/lodash.js
 // ==/UserScript==
 // TODO features / improvements:
+// * add keyboard shortcuts to change between enabled languages sets
 // * force update keyboard shortcut
 // * points should depend when short mode based on language / length
 // * fix leaderboard point related bugs
@@ -22,7 +23,6 @@
 // * green and red arrow if someone advances in the leaderboard
 // * more advanced statistics
 // * save all tournaments results
-// * add keyboard shortcuts to change between enabled languages sets
 // * convert table to use angularjs? vue?
 // * sort by columns (use angularjs?)
 // * vote on quality, type safety, etc.
@@ -34,6 +34,7 @@
 // * reset local code file when starting new clash
 // * points explanation
 // * shortcut to obfuscate usernames and avatars
+// * cheating using: ruby -e"" should not give points
 GM_addStyle(`
     #leaderboard {
         font-family: monospace;
@@ -77,6 +78,15 @@ let $startNewPrivateClashButton = () => $('.clashofcode-privateclash .clashofcod
 function checkNewClash(_changes, observer) {
     if (!_.isEmpty($startNewPrivateClashButton())) {
         observer.disconnect();
+        // TODO deduplicate
+        document.addEventListener("keydown", event => {
+            if (event.isComposing || event.keyCode === 229) {
+                return;
+            }
+            if (event.ctrlKey && event.key === '0') {
+                $("[role='presentation'] > a").trigger("click");
+            }
+        });
         if (localStorage.getItem(LOCAL_STORAGE_KEYS.startNewGame) === 'true') {
             $startNewPrivateClashButton().trigger("click");
             localStorage.removeItem(LOCAL_STORAGE_KEYS.startNewGame);
@@ -176,7 +186,7 @@ function check(_changes, observer) {
                 let points = isShortestMode
                     ? (score / time) * (minLengthPerLanguage[language] / length)
                     : score / time;
-                return Math.round(100 * points);
+                return 100 * points;
             }
             let leaderboard = [];
             _.forOwn(localStorage, (value, key) => {
@@ -185,18 +195,22 @@ function check(_changes, observer) {
                     let isShortestMode = _(reports).some(report => report.length);
                     let minLengthPerLanguage = _(reports)
                         .groupBy(report => report.language)
-                        .mapValues(reportGroup => _(reportGroup).map(report => report.length).max());
+                        .mapValues(reportGroup => _(reportGroup).map(report => report.length).min())
+                        .value();
                     let maxPointsThisGame = _(reports)
                         .map(report => getPoints(report.score, report.time, report.length, report.language, isShortestMode, minLengthPerLanguage))
                         .max();
                     _(reports).forEach((report) => {
                         var playerInfo = _(leaderboard).find(player => player.name === report.name);
                         let points = Math.round(100 * getPoints(report.score, report.time, report.length, report.language, isShortestMode, minLengthPerLanguage) / maxPointsThisGame);
+                        let isCurrentGame = key === keyPrefix + getReportId();
+                        let pointsTotal = points ? points : 0;
+                        let pointsThisGame = points ? points : 'Pending...';
                         if (playerInfo) {
-                            playerInfo.points += isNaN(points) ? 0 : points;
+                            playerInfo.points += pointsTotal;
                             playerInfo.gamesCount += 1;
-                            if (key === keyPrefix + getReportId()) {
-                                playerInfo.pointsThisGame = points;
+                            if (isCurrentGame) {
+                                playerInfo.pointsThisGame = pointsThisGame;
                             }
                         }
                         else {
@@ -204,11 +218,11 @@ function check(_changes, observer) {
                                 name: report.name,
                                 gamesCount: 1
                             };
-                            if (!isNaN(points)) {
-                                playerInfo.points = points;
+                            if (points) {
+                                playerInfo.points = pointsTotal;
                             }
-                            if (key === keyPrefix + getReportId()) {
-                                playerInfo.pointsThisGame = points;
+                            if (isCurrentGame) {
+                                playerInfo.pointsThisGame = pointsThisGame;
                             }
                             leaderboard.push(playerInfo);
                         }
