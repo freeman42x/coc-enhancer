@@ -9,13 +9,12 @@
 // @require https://raw.githubusercontent.com/lodash/lodash/4.17.15-npm/lodash.js
 // ==/UserScript==
 // TODO features / improvements:
-// * shortcut to obfuscate usernames and avatars
-// * features list in readme
-// * add keyboard shortcuts to change between enabled languages sets
-// * submit on all tests passed
-// * convert table to use angularjs? vue?
-// * fix updating condition
+// * force update keyboard shortcut
 // * points should depend when short mode based on language / length
+// * fix leaderboard point related bugs
+// * automatic invites and twitch/discord share
+// * submit on all tests passed
+// * fix updating condition
 // * text to speech for timer
 // * display tournament round
 // * start new tournament - tournament id
@@ -23,18 +22,18 @@
 // * green and red arrow if someone advances in the leaderboard
 // * more advanced statistics
 // * save all tournaments results
+// * add keyboard shortcuts to change between enabled languages sets
+// * convert table to use angularjs? vue?
 // * sort by columns (use angularjs?)
 // * vote on quality, type safety, etc.
 // * voting via CoC integrated chat
-// * automatic invites and twitch/discord share
-// * css for winners
-// * improve overall design
 // * easy way to view code side-by-side
 // * save answers locally
 // * remove redundancy related to selectors usage
 // * move css to external file: @resource
 // * reset local code file when starting new clash
 // * points explanation
+// * shortcut to obfuscate usernames and avatars
 GM_addStyle(`
     #leaderboard {
         font-family: monospace;
@@ -124,11 +123,9 @@ function check(_changes, observer) {
                     name: $(obj).find('.nickname').text(),
                     rank: parseInt($(obj).find('.clash-rank').text()),
                     score: parseInt($(obj).find('div.info-clash.score > div > div.info-content-container > div.info-value > span').text()),
-                    pending: _.isEmpty($(obj).find('.pending-rank')),
-                    nickname: $(obj).find('.nickname').text(),
-                    language: $(obj).find('div.info-clash.language > div > div.info-content-container > div.info-value > span').text(),
                     time: timeArray[0] * 3600 + timeArray[1] * 60 + timeArray[2],
-                    length: parseInt($(obj).find('div.info-clash.criterion > div > div.info-content-container > div.info-value > span').text())
+                    length: parseInt($(obj).find('div.info-clash.criterion > div > div.info-content-container > div.info-value > span').text()),
+                    language: $(obj).find('div.info-clash.language > div > div.info-content-container > div.info-value > span').text()
                 });
             });
             var finishedCount = _.countBy(reports, report => !isNaN(report.score)).true;
@@ -151,7 +148,7 @@ function check(_changes, observer) {
             });
             let reportData = [];
             _(fairReports).forEach(report => {
-                reportData.push(_.pick(report, 'name', 'score', 'time', 'length', 'fairRank'));
+                reportData.push(_.pick(report, 'name', 'rank', 'score', 'time', 'length', 'language'));
             });
             function getReportId() {
                 return _.last(location.pathname.split('/'));
@@ -175,20 +172,9 @@ function check(_changes, observer) {
                     localStorage.setItem(LOCAL_STORAGE_KEYS.startNewGame, 'true'); // FIXME use proper prefix
                 }
             });
-            // Leaderboard core input data:
-            //   - score = percentage of tests passed, Int, [0..100]
-            //   - time = time it took to solve the challenge, Int, [0..MAXtime]
-            //   - length = code size in number of characters, Int, [0..MAXlength]
-            //   - language = language in which the challenge was solved in
-            // Derived inputs:
-            //   - rank = position in CoC without this userscript, Int, [1..MAXrank]
-            //   - fair rank = position in each group per language, Int, [1..MAXfairRank]
-            // lopidav suggested: https://gist.github.com/lopidav/4ae1c8c1382802c5cf4f40c6e933bbc2
-            // TODO normalize points per language group in shortest mode
-            function getLeaderboardPoints(score, time, length, fairRank) {
-                let isShortestMode = !isNaN(length) && length; // FIXME
+            function getPoints(score, time, length, language, isShortestMode, minLengthPerLanguage) {
                 let points = isShortestMode
-                    ? score / (time * fairRank)
+                    ? (score / time) * (minLengthPerLanguage[language] / length)
                     : score / time;
                 return Math.round(100 * points);
             }
@@ -196,12 +182,16 @@ function check(_changes, observer) {
             _.forOwn(localStorage, (value, key) => {
                 if (key.startsWith(keyPrefix)) {
                     let reports = JSON.parse(value);
+                    let isShortestMode = _(reports).some(report => report.length);
+                    let minLengthPerLanguage = _(reports)
+                        .groupBy(report => report.language)
+                        .mapValues(reportGroup => _(reportGroup).map(report => report.length).max());
                     let maxPointsThisGame = _(reports)
-                        .map(report => getLeaderboardPoints(report.score, report.time, report.length, report.fairRank))
+                        .map(report => getPoints(report.score, report.time, report.length, report.language, isShortestMode, minLengthPerLanguage))
                         .max();
                     _(reports).forEach((report) => {
                         var playerInfo = _(leaderboard).find(player => player.name === report.name);
-                        let points = Math.round(100 * getLeaderboardPoints(report.score, report.time, report.length, report.fairRank) / maxPointsThisGame);
+                        let points = Math.round(100 * getPoints(report.score, report.time, report.length, report.language, isShortestMode, minLengthPerLanguage) / maxPointsThisGame);
                         if (playerInfo) {
                             playerInfo.points += isNaN(points) ? 0 : points;
                             playerInfo.gamesCount += 1;
