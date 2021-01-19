@@ -9,7 +9,12 @@
 // @require https://raw.githubusercontent.com/lodash/lodash/4.17.15-npm/lodash.js
 // ==/UserScript==
 // TODO features / improvements:
+// * fix points this game pending: https://www.codingame.com/clashofcode/clash/report/155112182a6d6fa23dd5714b1805880e945c7ad
+// * fix under 100% score giving 100 points: https://www.codingame.com/clashofcode/clash/report/1551062303e71f91364b24d1c050cabc2b4a36f
+// * update fairRank using angularjs after reloadWithDebugInfo
 // * add keyboard shortcuts to change between enabled languages sets
+// * achievements table, best for: total points, points this game, average points, games played, etc.
+// * more columns to get best players based on different metrics
 // * 100% score should give much more points, maybe use exponential scale for score
 // * force update keyboard shortcut
 // * points should depend when short mode based on language / length
@@ -36,6 +41,17 @@
 // * points explanation
 // * shortcut to obfuscate usernames and avatars
 // * cheating using: ruby -e"" should not give points
+// if (location.pathname === '/multiplayer/clashofcode') {
+//     let doNotReloadWithDebugInfo = 'doNotReloadWithDebugInfo';
+//     if (!localStorage.getItem(doNotReloadWithDebugInfo)) {
+//         localStorage.setItem(doNotReloadWithDebugInfo, 'true');
+//         angular.reloadWithDebugInfo();
+//     }
+//     else
+//     {
+//         localStorage.removeItem(doNotReloadWithDebugInfo);
+//     }
+// }
 GM_addStyle(`
     #leaderboard {
         font-family: monospace;
@@ -85,8 +101,30 @@ function checkNewClash(_changes, observer) {
             if (event.isComposing || event.keyCode === 229) {
                 return;
             }
-            if (event.ctrlKey && event.key === '0') {
-                $("[role='presentation'] > a").trigger("click");
+            let languages = $("[role='presentation'] > a > cg-checkbox")
+                .map(function () { return $(this).attr('label'); })
+                .get();
+            let enabledLanguages = $("[role='presentation'] > a > cg-checkbox > div > input")
+                .map(function () { return $(this).is(":checked"); })
+                .get();
+            let languagesAndEnabledLanguages = _.zip(languages, enabledLanguages);
+            let enableLanguages = (languagesToEnable) => {
+                languagesAndEnabledLanguages
+                    .forEach(([language, enabled]) => {
+                    if ((languagesToEnable.includes(language) && !enabled)
+                        ||
+                            (!languagesToEnable.includes(language) && enabled)) {
+                        $("[role='presentation'] > a > cg-checkbox")
+                            .filter(function () { return $(this).attr('label') === language; })
+                            .trigger('click');
+                    }
+                });
+            };
+            if (event.ctrlKey && event.altKey && event.key === '0') {
+                enableLanguages([]);
+            }
+            if (event.ctrlKey && event.altKey && event.key === '1') {
+                enableLanguages(languages);
             }
         });
         if (localStorage.getItem(LOCAL_STORAGE_KEYS.startNewGame) === 'true') {
