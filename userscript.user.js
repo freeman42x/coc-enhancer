@@ -9,7 +9,6 @@
 // @require https://raw.githubusercontent.com/lodash/lodash/4.17.15-npm/lodash.js
 // ==/UserScript==
 // TODO features / improvements:
-// * fix under 100% score giving 100 points: https://www.codingame.com/clashofcode/clash/report/1551062303e71f91364b24d1c050cabc2b4a36f
 // * 100% score should give much more points, maybe use exponential scale for score
 // * achievements table, best for: total points, points this game, average points, games played, 100% win streak, different language streak, etc.
 // * add wordwrap to the solution view
@@ -247,9 +246,10 @@ function check(_changes, observer) {
                     let maxPointsThisGame = _(reports)
                         .map(report => getPoints(report.score, report.time, report.length, report.language, isShortestMode, minLengthPerLanguage))
                         .max();
+                    let maxScoreThisGame = _(reports).map(report => report.score).max();
                     _(reports).forEach((report) => {
                         var playerInfo = _(leaderboard).find(player => player.name === report.name);
-                        let points = Math.round(100 * getPoints(report.score, report.time, report.length, report.language, isShortestMode, minLengthPerLanguage) / maxPointsThisGame);
+                        let points = Math.round(maxScoreThisGame * getPoints(report.score, report.time, report.length, report.language, isShortestMode, minLengthPerLanguage) / maxPointsThisGame);
                         let pointsTotal = points ? points : 0;
                         let isCurrentGame = key === keyPrefix + getReportId();
                         if (playerInfo) {
@@ -291,8 +291,8 @@ function check(_changes, observer) {
                             <th>Name</th>
                             <th>Points total</th>
                             <th>Points average per game</th>
-                            <th>Points this game</th>
                             <th>Games</th>
+                            <th>Points this game</th>
                         </tr>
                     </thead>
                     <tbody>`;
@@ -306,8 +306,8 @@ function check(_changes, observer) {
                     + playerInfo.name + '</td><td>'
                     + playerInfo.points + '</td><td>'
                     + playerInfo.pointsAverage() + '</td><td>'
-                    + playerInfo.pointsThisGameDisplay() + '</td><td>'
-                    + playerInfo.gamesCount + '</td>';
+                    + playerInfo.gamesCount + '</td><td>'
+                    + playerInfo.pointsThisGameDisplay() + '</td>';
             });
             table += "</tbody></table>";
             // TODO position / game
