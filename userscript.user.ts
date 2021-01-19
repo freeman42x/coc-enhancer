@@ -10,11 +10,11 @@
 // ==/UserScript==
 
 // TODO features / improvements:
+// * add keyboard shortcuts to change between enabled languages sets
 // * fix points this game pending: https://www.codingame.com/clashofcode/clash/report/155112182a6d6fa23dd5714b1805880e945c7ad
 // * fix under 100% score giving 100 points: https://www.codingame.com/clashofcode/clash/report/1551062303e71f91364b24d1c050cabc2b4a36f
 // * update fairRank using angularjs after reloadWithDebugInfo
-// * add keyboard shortcuts to change between enabled languages sets
-// * achievements table, best for: total points, points this game, average points, games played, etc.
+// * achievements table, best for: total points, points this game, average points, games played, 100% win streak, different language streak, etc.
 // * more columns to get best players based on different metrics
 // * 100% score should give much more points, maybe use exponential scale for score
 // * force update keyboard shortcut
@@ -121,25 +121,33 @@ function checkNewClash(_changes, observer) {
                     .get();
             let languagesAndEnabledLanguages = _.zip(languages, enabledLanguages);
             let enableLanguages = (languagesToEnable) => {
-                languagesAndEnabledLanguages
-                    .forEach(([language, enabled]) => {
-                        if ((languagesToEnable.includes(language) && !enabled)
-                            ||
-                            (!languagesToEnable.includes(language) && enabled)) {
-                            $("[role='presentation'] > a > cg-checkbox")
-                                .filter(function() { return $(this).attr('label') === language })
-                                .trigger('click')
+                languagesToEnable
+                    .forEach(languageToEnable => {
+                        if (event.ctrlKey && event.altKey && event.key === languageToEnable[1]){
+                            languagesAndEnabledLanguages
+                            .forEach(([language, enabled]) => {
+                                if ((languageToEnable[0].includes(language) && !enabled)
+                                    ||
+                                    (!languageToEnable[0].includes(language) && enabled)) {
+                                    $("[role='presentation'] > a > cg-checkbox")
+                                        .filter(function() { return $(this).attr('label') === language })
+                                        .trigger('click')
+                                }
+                            })
                         }
-                    })
+                    });
             }
 
-            if (event.ctrlKey && event.altKey && event.key==='0'){
-                enableLanguages([]);
-            }
+            let staticallyTypedFP = ['F#', 'Haskell', 'Kotlin', 'OCaml', 'Rust', 'Scala', 'Swift'];
+            let dynamicallyTyped = ['Bash', 'Clojure', 'Groovy', 'JavaScript', 'Lua', 'Perl', 'PHP', 'Python 3', 'Ruby'];
+            enableLanguages([
+                [[], '0'],
+                [languages, '1'],
+                [staticallyTypedFP, '2'],
+                [dynamicallyTyped, '3']
+            ]);
 
-            if (event.ctrlKey && event.altKey && event.key==='1'){
-                enableLanguages(languages);
-            }
+            // ['Bash', 'C', 'C#', 'C++', 'Clojure', 'D', 'Dart', 'F#', 'Go', 'Groovy', 'Haskell', 'Java', 'JavaScript', 'Kotlin', 'Lua', 'Objective-C', 'OCaml', 'Pascal', 'Perl', 'PHP', 'Python 3', 'Ruby', 'Rust', 'Scala', 'Swift', 'TypeScript', 'VB.NET']
         });
 
         if (localStorage.getItem(LOCAL_STORAGE_KEYS.startNewGame) === 'true') {
