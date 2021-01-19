@@ -9,14 +9,13 @@
 // @require https://raw.githubusercontent.com/lodash/lodash/4.17.15-npm/lodash.js
 // ==/UserScript==
 // TODO features / improvements:
-// * 100% score should give much more points, maybe use exponential scale for score
 // * achievements table, best for: total points, points this game, average points, games played, 100% win streak, different language streak, etc.
+// * get stars for 100% score solutions
+// * use exponential scale for score%
 // * add wordwrap to the solution view
-// * update fairRank using angularjs after reloadWithDebugInfo
 // * more columns to get best players based on different metrics
+// * update fairRank using angularjs after reloadWithDebugInfo
 // * force update keyboard shortcut
-// * points should depend when short mode based on language / length
-// * fix leaderboard point related bugs
 // * automatic invites and twitch/discord share
 // * submit on all tests passed
 // * fix updating condition
@@ -230,9 +229,10 @@ function check(_changes, observer) {
                 }
             });
             function getPoints(score, time, length, language, isShortestMode, minLengthPerLanguage) {
-                return isShortestMode
+                let points = isShortestMode
                     ? (length ? score * (minLengthPerLanguage[language] / length) : 0)
                     : score / time;
+                return points * (score === 100 ? 1.5 : 1);
             }
             let leaderboard = [];
             _.forOwn(localStorage, (value, key) => {
