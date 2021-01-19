@@ -9,13 +9,12 @@
 // @require https://raw.githubusercontent.com/lodash/lodash/4.17.15-npm/lodash.js
 // ==/UserScript==
 // TODO features / improvements:
-// * add keyboard shortcuts to change between enabled languages sets
-// * fix points this game pending: https://www.codingame.com/clashofcode/clash/report/155112182a6d6fa23dd5714b1805880e945c7ad
 // * fix under 100% score giving 100 points: https://www.codingame.com/clashofcode/clash/report/1551062303e71f91364b24d1c050cabc2b4a36f
-// * update fairRank using angularjs after reloadWithDebugInfo
-// * achievements table, best for: total points, points this game, average points, games played, 100% win streak, different language streak, etc.
-// * more columns to get best players based on different metrics
 // * 100% score should give much more points, maybe use exponential scale for score
+// * achievements table, best for: total points, points this game, average points, games played, 100% win streak, different language streak, etc.
+// * add wordwrap to the solution view
+// * update fairRank using angularjs after reloadWithDebugInfo
+// * more columns to get best players based on different metrics
 // * force update keyboard shortcut
 // * points should depend when short mode based on language / length
 // * fix leaderboard point related bugs
@@ -179,6 +178,7 @@ function check(_changes, observer) {
                     .map(s => parseInt(s));
                 reports.push({
                     name: $(obj).find('.nickname').text(),
+                    pending: !_.isEmpty($(obj).find('div.pending')),
                     rank: parseInt($(obj).find('.clash-rank').text()),
                     score: parseInt($(obj).find('div.info-clash.score > div > div.info-content-container > div.info-value > span').text()),
                     time: timeArray[0] * 3600 + timeArray[1] * 60 + timeArray[2],
@@ -231,8 +231,9 @@ function check(_changes, observer) {
                 }
             });
             function getPoints(score, time, length, language, isShortestMode, minLengthPerLanguage) {
-                let points = isShortestMode ? score * (minLengthPerLanguage[language] / length) : score / time;
-                return 100 * points;
+                return isShortestMode
+                    ? (length ? score * (minLengthPerLanguage[language] / length) : 0)
+                    : score / time;
             }
             let leaderboard = [];
             _.forOwn(localStorage, (value, key) => {
@@ -249,24 +250,32 @@ function check(_changes, observer) {
                     _(reports).forEach((report) => {
                         var playerInfo = _(leaderboard).find(player => player.name === report.name);
                         let points = Math.round(100 * getPoints(report.score, report.time, report.length, report.language, isShortestMode, minLengthPerLanguage) / maxPointsThisGame);
-                        let isCurrentGame = key === keyPrefix + getReportId();
                         let pointsTotal = points ? points : 0;
-                        let pointsThisGame = points === 0 ? 0 : points ? points : 'Pending...';
+                        let isCurrentGame = key === keyPrefix + getReportId();
                         if (playerInfo) {
                             playerInfo.points += pointsTotal;
                             playerInfo.gamesCount += 1;
                             if (isCurrentGame) {
-                                playerInfo.pointsThisGame = pointsThisGame;
+                                playerInfo.pointsThisGame = points;
                             }
                         }
                         else {
                             playerInfo = {
                                 name: report.name,
                                 gamesCount: 1,
-                                points: pointsTotal ? pointsTotal : 0
+                                points: pointsTotal ? pointsTotal : 0,
+                                pointsAverage: function () { return Math.round(this.points / this.gamesCount); },
+                                pointsThisGameDisplay: function () {
+                                    let reportThisGame = _(fairReports).find(_ => _.name === playerInfo.name);
+                                    return reportThisGame
+                                        ? ((this.pointsThisGame || this.pointsThisGame === 0)
+                                            ? this.pointsThisGame
+                                            : "Pending...")
+                                        : "N/A";
+                                }
                             };
                             if (isCurrentGame) {
-                                playerInfo.pointsThisGame = pointsThisGame;
+                                playerInfo.pointsThisGame = points;
                             }
                             leaderboard.push(playerInfo);
                         }
@@ -281,8 +290,8 @@ function check(_changes, observer) {
                             <th>Position</th>
                             <th>Name</th>
                             <th>Points total</th>
-                            <th>Points this game</th>
                             <th>Points average per game</th>
+                            <th>Points this game</th>
                             <th>Games</th>
                         </tr>
                     </thead>
@@ -292,13 +301,12 @@ function check(_changes, observer) {
                 .sortBy(_ => _.points)
                 .reverse()
                 .forEach((playerInfo, index) => {
-                let hasReportThisGame = _(fairReports).find(_ => _.name === playerInfo.name);
                 let attr = playerInfo.name === playerName ? ' id="my-tr"' : '';
                 table += '<tr' + attr + '><td>' + (index + 1) + '</td><td>'
                     + playerInfo.name + '</td><td>'
                     + playerInfo.points + '</td><td>'
-                    + (hasReportThisGame ? (isNaN(playerInfo.pointsThisGame) ? "Pending..." : playerInfo.pointsThisGame) : "N/A") + '</td><td>'
-                    + Math.round(playerInfo.points / playerInfo.gamesCount) + '</td><td>'
+                    + playerInfo.pointsAverage() + '</td><td>'
+                    + playerInfo.pointsThisGameDisplay() + '</td><td>'
                     + playerInfo.gamesCount + '</td>';
             });
             table += "</tbody></table>";
