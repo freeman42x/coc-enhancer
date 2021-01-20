@@ -10,6 +10,7 @@
 // ==/UserScript==
 
 // TODO features / improvements:
+// * do not compare apples to oranges: fastest/reverse should also normalize per language
 // * best highlighting/column for: 100% win streak, different language streak, etc.
 // * get stars for 100% score solutions
 // * use exponential scale for score%
@@ -372,7 +373,9 @@ function check(_changes, observer) {
             let maxPoints = _(leaderboard).map(_ => _.points).max();
             let maxPointsAverage = _(leaderboard).map(_ => _.pointsAverage()).max();
             let maxGamesCount = _(leaderboard).map(_ => _.gamesCount).max();
-            let maxPointsThisGame = _(leaderboard).map(_ => _.pointsThisGameDisplay()).max();
+            let maxPointsThisGame = _(leaderboard)
+                .map(_ => typeof _.pointsThisGameDisplay() == 'number' ? _.pointsThisGameDisplay() : 0)
+                .max();
             _(leaderboard)
                 .sortBy(_ => _.points)
                 .reverse()
