@@ -9,7 +9,7 @@
 // @require https://raw.githubusercontent.com/lodash/lodash/4.17.15-npm/lodash.js
 // ==/UserScript==
 // TODO features / improvements:
-// * do not compare apples to oranges: fastest/reverse should also normalize per language
+// * text to speech for timer
 // * best highlighting/column for: 100% win streak, different language streak, etc.
 // * get stars for 100% score solutions
 // * use exponential scale for score%
@@ -20,7 +20,6 @@
 // * automatic invites and twitch/discord share
 // * submit on all tests passed
 // * fix updating condition
-// * text to speech for timer
 // * display tournament round
 // * start new tournament - tournament id
 // * tournament id dropdown - aggregate [1..n] tournaments
@@ -245,10 +244,10 @@ function check(_changes, observer) {
                     localStorage.setItem(LOCAL_STORAGE_KEYS.startNewGame, 'true'); // FIXME use proper prefix
                 }
             });
-            function getPoints(score, time, length, language, isShortestMode, minLengthPerLanguage) {
+            function getPoints(score, time, length, language, isShortestMode, minLengthPerLanguage, minTimePerLanguage) {
                 let points = isShortestMode
                     ? (length ? score * (minLengthPerLanguage[language] / length) : 0)
-                    : score / time;
+                    : score * minTimePerLanguage[language] / time;
                 return points * (score === 100 ? 1.5 : 1);
             }
             let leaderboard = [];
@@ -260,13 +259,17 @@ function check(_changes, observer) {
                         .groupBy(report => report.language)
                         .mapValues(reportGroup => _(reportGroup).map(report => report.length).min())
                         .value();
+                    let minTimePerLanguage = _(reports)
+                        .groupBy(report => report.language)
+                        .mapValues(reportGroup => _(reportGroup).map(report => report.time).min())
+                        .value();
                     let maxPointsThisGame = _(reports)
-                        .map(report => getPoints(report.score, report.time, report.length, report.language, isShortestMode, minLengthPerLanguage))
+                        .map(report => getPoints(report.score, report.time, report.length, report.language, isShortestMode, minLengthPerLanguage, minTimePerLanguage))
                         .max();
                     let maxScoreThisGame = _(reports).map(report => report.score).max();
                     _(reports).forEach((report) => {
                         var playerInfo = _(leaderboard).find(player => player.name === report.name);
-                        let points = Math.round(maxScoreThisGame * getPoints(report.score, report.time, report.length, report.language, isShortestMode, minLengthPerLanguage) / maxPointsThisGame);
+                        let points = Math.round(maxScoreThisGame * getPoints(report.score, report.time, report.length, report.language, isShortestMode, minLengthPerLanguage, minTimePerLanguage) / maxPointsThisGame);
                         let pointsTotal = points ? points : 0;
                         let isCurrentGame = key === keyPrefix + getReportId();
                         if (playerInfo) {
