@@ -9,7 +9,7 @@
 // @require https://raw.githubusercontent.com/lodash/lodash/4.17.15-npm/lodash.js
 // ==/UserScript==
 // TODO features / improvements:
-// * achievements table, best for: total points, points this game, average points, games played, 100% win streak, different language streak, etc.
+// * achievements table, best for: total points, average points, games played, 100% win streak, different language streak, points this game, etc.
 // * get stars for 100% score solutions
 // * use exponential scale for score%
 // * add wordwrap to the solution view
@@ -61,6 +61,22 @@ GM_addStyle(`
 
     #leaderboard tbody td {
         padding: 0 15px;
+    }
+
+    #leaderboard tbody td.best-at-points {
+        background-color: lightgreen;
+    }
+
+    #leaderboard tbody td.best-at-points-average {
+        background-color: lightblue;
+    }
+
+    #leaderboard tbody td.best-at-games-count {
+        background-color: lightseagreen;
+    }
+
+    #leaderboard tbody td.best-at-points-this-game {
+        background-color: yellow;
     }
 
     #leaderboard tbody tr:nth-child(odd) {
@@ -297,17 +313,26 @@ function check(_changes, observer) {
                     </thead>
                     <tbody>`;
             let playerName = $('.my-background .nickname').text();
+            let maxPoints = _(leaderboard).map(_ => _.points).max();
+            let maxPointsAverage = _(leaderboard).map(_ => _.pointsAverage()).max();
+            let maxGamesCount = _(leaderboard).map(_ => _.gamesCount).max();
+            let maxPointsThisGame = _(leaderboard).map(_ => _.pointsThisGameDisplay()).max();
             _(leaderboard)
                 .sortBy(_ => _.points)
                 .reverse()
                 .forEach((playerInfo, index) => {
                 let attr = playerInfo.name === playerName ? ' id="my-tr"' : '';
-                table += '<tr' + attr + '><td>' + (index + 1) + '</td><td>'
-                    + playerInfo.name + '</td><td>'
-                    + playerInfo.points + '</td><td>'
-                    + playerInfo.pointsAverage() + '</td><td>'
-                    + playerInfo.gamesCount + '</td><td>'
-                    + playerInfo.pointsThisGameDisplay() + '</td>';
+                let bestAtPoints = playerInfo.points === maxPoints ? ' class="best-at-points"' : '';
+                let bestAtPointsAverage = playerInfo.pointsAverage() === maxPointsAverage ? ' class="best-at-points-average"' : '';
+                let bestAtGamesCount = playerInfo.gamesCount === maxGamesCount ? ' class="best-at-games-count"' : '';
+                let bestAtPointsThisGame = playerInfo.pointsThisGameDisplay() === maxPointsThisGame ? ' class="best-at-points-this-game"' : '';
+                table +=
+                    '<tr' + attr + '><td>' + (index + 1) + '</td>' +
+                        '<td>' + playerInfo.name + '</td>' +
+                        '<td' + bestAtPoints + '>' + playerInfo.points + '</td>' +
+                        '<td' + bestAtPointsAverage + '>' + playerInfo.pointsAverage() + '</td>' +
+                        '<td' + bestAtGamesCount + '>' + playerInfo.gamesCount + '</td>' +
+                        '<td' + bestAtPointsThisGame + '>' + playerInfo.pointsThisGameDisplay() + '</td></tr>';
             });
             table += "</tbody></table>";
             // TODO position / game
