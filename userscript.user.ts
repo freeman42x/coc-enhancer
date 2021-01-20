@@ -10,7 +10,7 @@
 // ==/UserScript==
 
 // TODO features / improvements:
-// * achievements table, best for: total points, average points, games played, 100% win streak, different language streak, points this game, etc.
+// * best highlighting/column for: 100% win streak, different language streak, etc.
 // * get stars for 100% score solutions
 // * use exponential scale for score%
 // * add wordwrap to the solution view
@@ -318,6 +318,7 @@ function check(_changes, observer) {
                         if (playerInfo){
                             playerInfo.points += pointsTotal;
                             playerInfo.gamesCount += 1;
+                            playerInfo.winStreak += pointsTotal === 100 ? 1 : 0;
 
                             if (isCurrentGame) {
                                 playerInfo.pointsThisGame = points;
@@ -337,7 +338,9 @@ function check(_changes, observer) {
                                                 ? this.pointsThisGame
                                                 : "Pending...")
                                         : "N/A";
-                                }
+                                },
+                                winStreak: pointsTotal === 100 ? 1 : 0,
+                                languageStreak: pointsTotal === 100 ? 1 : 0
                             }
 
                             if (isCurrentGame) {
@@ -361,6 +364,7 @@ function check(_changes, observer) {
                             <th>Points average per game</th>
                             <th>Games</th>
                             <th>Points this game</th>
+                            <th>Win streak</th>
                         </tr>
                     </thead>
                     <tbody>`;
@@ -384,7 +388,9 @@ function check(_changes, observer) {
                         '<td' + bestAtPoints +'>' + playerInfo.points + '</td>' +
                         '<td' + bestAtPointsAverage +'>' + playerInfo.pointsAverage() + '</td>' +
                         '<td' + bestAtGamesCount +'>' + playerInfo.gamesCount + '</td>' +
-                        '<td' + bestAtPointsThisGame +'>' + playerInfo.pointsThisGameDisplay() + '</td></tr>';
+                        '<td' + bestAtPointsThisGame +'>' + playerInfo.pointsThisGameDisplay() + '</td>' +
+                        '<td>' + playerInfo.winStreak + '</td>' +
+                        '</tr>';
                 });
             table += "</tbody></table>"
 
