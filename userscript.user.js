@@ -9,13 +9,17 @@
 // @require https://raw.githubusercontent.com/lodash/lodash/4.17.15-npm/lodash.js
 // ==/UserScript==
 // TODO features / improvements:
+// * less than 100% should not be colored in green: https://www.codingame.com/clashofcode/clash/report/1553675e0fa94865764d79d18d51fae0e8dc6f5
+// * fix Nuwaisir should ave 100 points: https://www.codingame.com/clashofcode/clash/report/15535331e00cb926297cb89f861c164f56c1b2f
 // * text to speech for timer
 // * best highlighting/column for: 100% win streak, different language streak, etc.
 // * get stars for 100% score solutions
 // * use exponential scale for score%
 // * add wordwrap to the solution view
 // * more columns to get best players based on different metrics
-// * update fairRank using angularjs after reloadWithDebugInfo
+// * update fairRank using angularjs after reloadWithDebugInfo, see: https://github.com/Azkellas/cgenhancer/issues/2#issuecomment-763527122
+// * convert table to use angularjs? vue?
+// * sort by columns (use angularjs?)
 // * force update keyboard shortcut
 // * automatic invites and twitch/discord share
 // * submit on all tests passed
@@ -26,8 +30,6 @@
 // * green and red arrow if someone advances in the leaderboard
 // * more advanced statistics
 // * save all tournaments results
-// * convert table to use angularjs? vue?
-// * sort by columns (use angularjs?)
 // * vote on quality, type safety, etc.
 // * voting via CoC integrated chat
 // * easy way to view code side-by-side
