@@ -10,8 +10,8 @@
 // ==/UserScript==
 
 // TODO features / improvements:
+// * points this game pending... https://www.codingame.com/clashofcode/clash/report/1554254019acbe3a0fc7c24b79651959f92edfb
 // * less than 100% should not be colored in green: https://www.codingame.com/clashofcode/clash/report/1553675e0fa94865764d79d18d51fae0e8dc6f5
-// * fix Nuwaisir should ave 100 points: https://www.codingame.com/clashofcode/clash/report/15535331e00cb926297cb89f861c164f56c1b2f
 // * text to speech for timer
 // * best highlighting/column for: 100% win streak, different language streak, etc.
 // * get stars for 100% score solutions
@@ -307,7 +307,15 @@ function check(_changes, observer) {
                     let minTimePerLanguage =
                         _(reports)
                             .groupBy(report => report.language)
-                            .mapValues(reportGroup => _(reportGroup).map(report => report.time).min())
+                            .mapValues(reportGroup => {
+                                let maxScore = _(reportGroup)
+                                    .map(report => report.score)
+                                    .max();
+                                return _(reportGroup)
+                                    .filter(report => report.score === maxScore)
+                                    .map(report => report.time)
+                                    .min();
+                            })
                             .value();
                     let maxPointsThisGame =
                         _(reports)
