@@ -11,7 +11,6 @@
 
 // TODO features / improvements:
 // * less than 100% should not be colored in green: https://www.codingame.com/clashofcode/clash/report/1553675e0fa94865764d79d18d51fae0e8dc6f5
-// * text to speech for timer
 // * best highlighting/column for: 100% win streak, different language streak, etc.
 // * get stars for 100% score solutions
 // * use exponential scale for score%
@@ -40,6 +39,7 @@
 // * points explanation
 // * shortcut to obfuscate usernames and avatars
 // * cheating using: ruby -e"" should not give points
+// * other uses for the TTS hammer
 
 // if (location.pathname === '/multiplayer/clashofcode') {
 //     let doNotReloadWithDebugInfo = 'doNotReloadWithDebugInfo';
@@ -187,6 +187,25 @@ function checkIde(_changes, observer) {
                 $('[for="ide-settings-synchro-enabled"]').trigger("click");
                 $('.settings > .menu-entry-inner').trigger("click");
             }, 300);
+        }
+
+        (new MutationObserver(countdown)).observe(document, {childList: true, subtree: true});
+
+        function countdown(_changes, observer) {
+            let minutes = $('.countdown-value.minutes').text();
+            let seconds = $('.countdown-value.seconds').text();
+            let sayAt = (at, text) => {
+                if (at === minutes+':'+seconds){
+                    window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+                }
+            }
+
+            sayAt('07:00', '7 minutes remaining');
+            sayAt('03:00', '3 minutes remaining');
+            sayAt('01:00', '1 minute remaining');
+            sayAt('00:30', '30 seconds remaining');
+            sayAt('00:20', '20 seconds remaining');
+            sayAt('00:10', '10 seconds remaining');
         }
     }
 }
