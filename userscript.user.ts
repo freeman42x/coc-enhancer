@@ -10,7 +10,6 @@
 // ==/UserScript==
 
 // TODO features / improvements:
-// * points this game pending... https://www.codingame.com/clashofcode/clash/report/1554254019acbe3a0fc7c24b79651959f92edfb
 // * less than 100% should not be colored in green: https://www.codingame.com/clashofcode/clash/report/1553675e0fa94865764d79d18d51fae0e8dc6f5
 // * text to speech for timer
 // * best highlighting/column for: 100% win streak, different language streak, etc.
@@ -325,7 +324,7 @@ function check(_changes, observer) {
                     let maxScoreThisGame = _(reports).map(report => report.score).max();
                     _(reports).forEach((report) => {
                         var playerInfo = _(leaderboard).find(player => player.name === report.name);
-                        let points = Math.round(maxScoreThisGame * getPoints(report.score, report.time, report.length,
+                        let points = maxPointsThisGame === 0 ? 0 : Math.round(maxScoreThisGame * getPoints(report.score, report.time, report.length,
                                         report.language, isShortestMode, minLengthPerLanguage, minTimePerLanguage) / maxPointsThisGame);
                         let pointsTotal = points ? points : 0;
                         let isCurrentGame = key === keyPrefix + getReportId();
