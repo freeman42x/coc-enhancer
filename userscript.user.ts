@@ -170,12 +170,17 @@ function checkIde(_changes, observer) {
                 }
             }
 
+            sayAt('12:00', '12 minutes remaining');
+            sayAt('10:00', '10 minutes remaining');
             sayAt('07:00', '7 minutes remaining');
+            sayAt('05:00', '5 minutes remaining');
             sayAt('03:00', '3 minutes remaining');
             sayAt('01:00', '1 minute remaining');
             sayAt('00:30', '30 seconds remaining');
             sayAt('00:20', '20 seconds remaining');
+            sayAt('00:15', '15 seconds remaining');
             sayAt('00:10', '10 seconds remaining');
+            sayAt('00:05', '5 seconds remaining');
         }
     }
 }
