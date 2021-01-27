@@ -8,42 +8,6 @@
 // @description CodinGame Clash of Code enhancer: fair rankings, competition, ...
 // @require https://raw.githubusercontent.com/lodash/lodash/4.17.15-npm/lodash.js
 // ==/UserScript==
-// TODO features / improvements:
-// * keyboard shortcut to focus view on leaderboard, current game results, etc.
-// * TTS Clash starting in 15 seconds warning
-// * add wordwrap to the solution view!!!!!!!!!!!!!!!!!!!!!!!
-// * change timer color as time remaining gets lower: green to red gradient
-// * Buzzword should have 100 points this game: https://www.codingame.com/clashofcode/clash/report/155829018c2e61e45cc17c30755f83e035344a3
-// * less than 100% should not be colored in green: https://www.codingame.com/clashofcode/clash/report/1553675e0fa94865764d79d18d51fae0e8dc6f5
-// * best highlighting/column for: 100% win streak, different language streak, etc.
-// * get stars for 100% score solutions
-// * use exponential scale for score%
-// * more columns to get best players based on different metrics
-// * update fairRank using angularjs after reloadWithDebugInfo, see: https://github.com/Azkellas/cgenhancer/issues/2#issuecomment-763527122
-// * convert table to use angularjs? vue?
-// * sort by columns (use angularjs?)
-// * force update keyboard shortcut
-// * automatic invites and twitch/discord share
-// * submit on all tests passed
-// * fix updating condition
-// * display tournament round
-// * start new tournament - tournament id
-// * tournament id dropdown - aggregate [1..n] tournaments
-// * green and red arrow if someone advances in the leaderboard
-// * more advanced statistics
-// * save all tournaments results
-// * vote on quality, type safety, etc.
-// * voting via CoC integrated chat
-// * easy way to view code side-by-side
-// * save answers locally
-// * remove redundancy related to selectors usage
-// * move css to external file: @resource
-// * reset local code file when starting new clash
-// * points explanation
-// * shortcut to obfuscate usernames and avatars
-// * cheating using: ruby -e"" should not give points
-// * other uses for the TTS hammer
-// * shortcut for starting new public clash
 // if (location.pathname === '/multiplayer/clashofcode') {
 //     let doNotReloadWithDebugInfo = 'doNotReloadWithDebugInfo';
 //     if (!localStorage.getItem(doNotReloadWithDebugInfo)) {
