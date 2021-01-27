@@ -9,11 +9,15 @@
 // @require https://raw.githubusercontent.com/lodash/lodash/4.17.15-npm/lodash.js
 // ==/UserScript==
 // TODO features / improvements:
+// * keyboard shortcut to focus view on leaderboard, current game results, etc.
+// * TTS Clash starting in 15 seconds warning
+// * add wordwrap to the solution view!!!!!!!!!!!!!!!!!!!!!!!
+// * change timer color as time remaining gets lower: green to red gradient
+// * Buzzword should have 100 points this game: https://www.codingame.com/clashofcode/clash/report/155829018c2e61e45cc17c30755f83e035344a3
 // * less than 100% should not be colored in green: https://www.codingame.com/clashofcode/clash/report/1553675e0fa94865764d79d18d51fae0e8dc6f5
 // * best highlighting/column for: 100% win streak, different language streak, etc.
 // * get stars for 100% score solutions
 // * use exponential scale for score%
-// * add wordwrap to the solution view
 // * more columns to get best players based on different metrics
 // * update fairRank using angularjs after reloadWithDebugInfo, see: https://github.com/Azkellas/cgenhancer/issues/2#issuecomment-763527122
 // * convert table to use angularjs? vue?
@@ -39,6 +43,7 @@
 // * shortcut to obfuscate usernames and avatars
 // * cheating using: ruby -e"" should not give points
 // * other uses for the TTS hammer
+// * shortcut for starting new public clash
 // if (location.pathname === '/multiplayer/clashofcode') {
 //     let doNotReloadWithDebugInfo = 'doNotReloadWithDebugInfo';
 //     if (!localStorage.getItem(doNotReloadWithDebugInfo)) {
