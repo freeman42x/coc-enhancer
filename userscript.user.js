@@ -137,7 +137,8 @@ function checkIde(_changes, observer) {
                 $('.settings > .menu-entry-inner').trigger("click");
             }, 300);
         }
-        (new MutationObserver(countdown)).observe(document, { childList: true, subtree: true });
+        let $countdownContainer = $('.countdown-container').get(0);
+        (new MutationObserver(countdown)).observe($countdownContainer, { childList: true, subtree: true });
         function countdown(_changes, observer) {
             let minutes = $('.countdown-value.minutes').text();
             let seconds = $('.countdown-value.seconds').text();
