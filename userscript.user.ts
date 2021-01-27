@@ -296,7 +296,15 @@ function check(_changes, observer) {
                     let minLengthPerLanguage =
                         _(reports)
                             .groupBy(report => report.language)
-                            .mapValues(reportGroup => _(reportGroup).map(report => report.length).min())
+                            .mapValues(reportGroup => {
+                                let maxScore = _(reportGroup)
+                                    .map(report => report.score)
+                                    .max();
+                                return _(reportGroup)
+                                    .filter(report => report.score === maxScore)
+                                    .map(report => report.length)
+                                    .min();
+                            })
                             .value();
                     let minTimePerLanguage =
                         _(reports)

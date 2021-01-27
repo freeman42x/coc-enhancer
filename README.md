@@ -77,6 +77,5 @@ Features:
 
 Bugs:
 
-* Buzzword should have 100 points this game: https://www.codingame.com/clashofcode/clash/report/155829018c2e61e45cc17c30755f83e035344a3
 * less than 100% should not be colored in green: https://www.codingame.com/clashofcode/clash/report/1553675e0fa94865764d79d18d51fae0e8dc6f5
 * hook into AngularJS lifecycle to do proper updates which are currently bugged and not always happening. Use angularjs after reloadWithDebugInfo, see: https://github.com/Azkellas/cgenhancer/issues/2#issuecomment-763527122
