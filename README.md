@@ -46,6 +46,7 @@ Contributing - if you wish to contribute, here is a list of features and bug fix
 
 Features:
 
+* tooltips that explain columns, points, etc.
 * automatic link sharing to twitch via speechchat.com or twitch stream manager and to Discord possibly via having a Discord tab opened also
 * the TTS voice is not kawaii enough
 * add wordwrap to the solution view!!!!!!!!!!!!!!!!!!!!!!!
