@@ -46,9 +46,12 @@ Contributing - if you wish to contribute, here is a list of features and bug fix
 
 Features:
 
+* automatic link sharing to twitch via speechchat.com or twitch stream manager and to Discord possibly via having a Discord tab opened also
+* the TTS voice is not kawaii enough
 * add wordwrap to the solution view!!!!!!!!!!!!!!!!!!!!!!!
 * best highlighting/column for: 100% win streak, different language streak, etc.
 * green and red arrow if someone advances in the leaderboard
+* notifications and permanent indicators for when other Clash of Code players are streaming
 * start new tournament - tournament id
 * tournament id dropdown - aggregate [1..n] tournaments
 * force update keyboard shortcut
