@@ -335,7 +335,7 @@ function check(_changes, observer) {
                         if (playerInfo){
                             playerInfo.points += pointsTotal;
                             playerInfo.gamesCount += 1;
-                            playerInfo.winStreak += pointsTotal === 100 ? 1 : 0;
+                            playerInfo.winStreak += report.score === 100 ? 1 : 0;
 
                             if (isCurrentGame) {
                                 playerInfo.pointsThisGame = points;
@@ -356,7 +356,7 @@ function check(_changes, observer) {
                                                 : "Pending...")
                                         : "N/A";
                                 },
-                                winStreak: pointsTotal === 100 ? 1 : 0,
+                                winStreak: report.score === 100 ? 1 : 0,
                                 languageStreak: pointsTotal === 100 ? 1 : 0
                             }
 
