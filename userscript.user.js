@@ -367,7 +367,10 @@ function check(_changes, observer) {
                             .find('div.clash-rank')
                             .css('background-color', 'blueviolet');
                     }
-                    if (fairReport.score > 0) {
+                    if (fairReport.score < 100 && fairReport.fairRank === 1) {
+                        bgColor = 'yellowgreen';
+                    }
+                    else if (fairReport.score > 0) {
                         var bgColor;
                         switch (fairReport.fairRank) {
                             case 1:
