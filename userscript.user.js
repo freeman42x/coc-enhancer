@@ -239,7 +239,7 @@ function check(_changes, observer) {
             function getPoints(score, time, length, language, isShortestMode, minLengthPerLanguage, minTimePerLanguage) {
                 let points = isShortestMode
                     ? (length ? score * (minLengthPerLanguage[language] / length) : 0)
-                    : score * minTimePerLanguage[language] / time;
+                    : (score === 100 ? score * minTimePerLanguage[language] / time : score); // TODO ponder if same bug cannot happen above also
                 return points * (score === 100 ? 1.5 : 1);
             }
             let leaderboard = [];

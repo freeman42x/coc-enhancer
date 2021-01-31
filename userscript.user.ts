@@ -284,7 +284,7 @@ function check(_changes, observer) {
                                language: string, isShortestMode: boolean, minLengthPerLanguage, minTimePerLanguage){
                 let points = isShortestMode
                     ? (length ? score * (minLengthPerLanguage[language] / length) : 0)
-                    : score * minTimePerLanguage[language] / time;
+                    : (score === 100 ? score * minTimePerLanguage[language] / time : score); // TODO ponder if same bug cannot happen above also
                 return points * (score === 100 ? 1.5 : 1);
             }
 

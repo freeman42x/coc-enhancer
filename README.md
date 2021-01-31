@@ -57,6 +57,7 @@ Features:
 * notifications and permanent indicators for when other Clash of Code players are streaming
 * start new tournament - tournament id
 * tournament id dropdown - aggregate [1..n] tournaments
+* publish user script
 * force update keyboard shortcut
 * shortcut for starting new public clash: Ctrl + Shift + i and document it
 * change timer color as time remaining gets lower: green to red gradient
