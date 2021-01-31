@@ -84,6 +84,5 @@ Features:
 
 Bugs:
 
-* AleaJacta should have win streak of 1: https://www.codingame.com/clashofcode/clash/report/15689239b757aade61f4ebc9b3be09d7d3dc5da
 * less than 100% should not be colored in green: https://www.codingame.com/clashofcode/clash/report/1553675e0fa94865764d79d18d51fae0e8dc6f5
 * hook into AngularJS lifecycle to do proper updates which are currently bugged and not always happening. Use angularjs after reloadWithDebugInfo, see: https://github.com/Azkellas/cgenhancer/issues/2#issuecomment-763527122
