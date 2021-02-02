@@ -46,6 +46,7 @@ Contributing - if you wish to contribute, here is a list of features and bug fix
 
 Features:
 
+* force update keyboard shortcut
 * tooltips that explain columns, points, etc.
 * enhance the clash user interface: remove uneeded elements, fix tiling bugs, allow resizing of all sections, ... 
 * position for each separate win category: average points position, wining streak position, etc.
@@ -58,7 +59,6 @@ Features:
 * start new tournament - tournament id
 * tournament id dropdown - aggregate [1..n] tournaments
 * publish user script
-* force update keyboard shortcut
 * shortcut for starting new public clash: Ctrl + Shift + i and document it
 * change timer color as time remaining gets lower: green to red gradient
 * use exponential scale for score
@@ -84,4 +84,5 @@ Features:
 
 Bugs:
 
+* less than 100% score should never receive more points than minimum points received by someone doing 100% score for that language
 * hook into AngularJS lifecycle to do proper updates which are currently bugged and not always happening. Use angularjs after reloadWithDebugInfo, see: https://github.com/Azkellas/cgenhancer/issues/2#issuecomment-763527122
