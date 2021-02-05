@@ -46,13 +46,15 @@ Contributing - if you wish to contribute, here is a list of features and bug fix
 
 Features:
 
+* solution view -> add wordwrap
+* solution view -> set dynamic width layout
+* points average per game should use the law of large numbers for highlighting the best in class
 * force update keyboard shortcut
 * tooltips that explain columns, points, etc.
 * enhance the clash user interface: remove uneeded elements, fix tiling bugs, allow resizing of all sections, ... 
 * position for each separate win category: average points position, wining streak position, etc.
 * automatic link sharing to twitch via speechchat.com or twitch stream manager and to Discord possibly via having a Discord tab opened also
 * the TTS voice is not kawaii enough
-* add wordwrap to the solution view!!!!!!!!!!!!!!!!!!!!!!!
 * best highlighting/column for: 100% win streak, different language streak, etc.
 * green and red arrow if someone advances in the leaderboard
 * notifications and permanent indicators for when other Clash of Code players are streaming
@@ -84,5 +86,6 @@ Features:
 
 Bugs:
 
+* reduce TTS volume
 * less than 100% score should never receive more points than minimum points received by someone doing 100% score for that language
 * hook into AngularJS lifecycle to do proper updates which are currently bugged and not always happening. Use angularjs after reloadWithDebugInfo, see: https://github.com/Azkellas/cgenhancer/issues/2#issuecomment-763527122
