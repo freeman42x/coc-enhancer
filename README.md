@@ -48,6 +48,8 @@ Features:
 
 * solution view -> add wordwrap
 * solution view -> set dynamic width layout
+* other Clash of Code streamer - go live notifications for the ones you follow on CoC or twitch
+* other Clash of Code streamer - list everyone streaming CoC
 * points average per game should use the law of large numbers for highlighting the best in class
 * force update keyboard shortcut
 * tooltips that explain columns, points, etc.
@@ -57,7 +59,6 @@ Features:
 * the TTS voice is not kawaii enough
 * best highlighting/column for: 100% win streak, different language streak, etc.
 * green and red arrow if someone advances in the leaderboard
-* notifications and permanent indicators for when other Clash of Code players are streaming
 * start new tournament - tournament id
 * tournament id dropdown - aggregate [1..n] tournaments
 * publish user script
